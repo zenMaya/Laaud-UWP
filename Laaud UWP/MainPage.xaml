@@ -26,7 +26,16 @@
                 <ColumnDefinition Width="693*"/>
                 <ColumnDefinition Width="395*"/>
             </Grid.ColumnDefinitions>
-            <Grid Background="Blue"/>
+            <Grid>
+                <Grid Background="Blue" Height="511" VerticalAlignment="Bottom"/>
+                <CommandBar Height="57">
+                    <CommandBar.Content>
+                        <Grid/>
+                    </CommandBar.Content>
+                    <AppBarButton Icon="Accept" Label="AppBarButton"/>
+                    <AppBarButton Icon="Cancel" Label="AppBarButton"/>
+                </CommandBar>
+            </Grid>
             <Grid Background="Green" Grid.Column="1"/>
         </Grid>
     </Grid>
