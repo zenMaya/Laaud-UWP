@@ -5,6 +5,11 @@ VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Laaud UWP", "Laaud UWP\Laaud UWP.csproj", "{1855B4C4-76F7-498E-89C9-BCC66B04DB1A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EC4CC5BB-832C-4D46-88F2-A3B17B861A81}"
+	ProjectSection(SolutionItems) = preProject
+		Logo.svg = Logo.svg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM

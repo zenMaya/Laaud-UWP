@@ -10,33 +10,44 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TextBox TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="48" Background="#66FF00FF" PlaceholderText="Search" FontSize="24"/>
 
-        <ScrollViewer HorizontalAlignment="Left" Margin="0,48,0,104" Width="192" Background="#FFE8FF00" VerticalScrollBarVisibility="Hidden">
-            <Grid>
-                <StackPanel x:Name = "TrackList" Margin="0,0,0,62" RelativePanel.AlignTopWithPanel="True" Background="#FFD1FF00">
-                    <local:TracklistItem Width="189" Height="43">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition Width="109*"/>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Margin="0,48,0,166" Background="#FFE8FF00" VerticalScrollBarVisibility="Hidden">
+                <StackPanel x:Name = "TrackList" RelativePanel.AlignTopWithPanel="True" Background="#FFD1FF00">
+                    <local:TracklistItem>
 
                     </local:TracklistItem>
                 </StackPanel>
-                <Grid Margin="0,506,-9,0" Width="201" Background="#FFFFFF34"/>
+            </ScrollViewer>
+            <Grid Margin="0,0,0,102" Background="#FFFFFF34" Height="64" VerticalAlignment="Bottom"/>
+
+            <Grid Margin="0,48,0,104" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="11*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                    <Grid Background="Blue" Margin="42,0,0,0" Grid.RowSpan="2"></Grid>
+                </ScrollViewer>
+                <ScrollViewer  Grid.Column="1" Margin="0,0,0,0" VerticalScrollBarVisibility="Hidden">
+                    <Grid Background="Green" Grid.Column="1" CanDrag="True" Grid.RowSpan="2"></Grid>
+                </ScrollViewer>
+                <Grid HorizontalAlignment="Left" Width="42" Background="#FF00F3FF" Grid.RowSpan="2">
+                    <Button x:Name="Settings" Height="42" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                        <Image Source="Assets/Settings.png" Margin="-11,-1"/>
+                    </Button>
+                    <Button x:Name="Favorites" Height="42" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,42,0,0">
+                        <Image Source="Assets/Favorites.png" Margin="-5,-7"/>
+                    </Button>
+                    <Button x:Name="Folders" Height="42" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,84,0,0"/>
+                    <Button x:Name="Playlists" Height="42" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,126,0,0"/>
+                    <Button x:Name="About" Height="42" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,168,0,0"/>
+                </Grid>
             </Grid>
-        </ScrollViewer>
-        <Grid Background="Red" Height="104" VerticalAlignment="Bottom"/>
-        <Grid Margin="192,48,0,104">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="693*"/>
-                <ColumnDefinition Width="395*"/>
-            </Grid.ColumnDefinitions>
-            <Grid>
-                <Grid Background="Blue" Height="511" VerticalAlignment="Bottom"/>
-                <CommandBar Height="57">
-                    <CommandBar.Content>
-                        <Grid/>
-                    </CommandBar.Content>
-                    <AppBarButton Icon="Accept" Label="AppBarButton"/>
-                    <AppBarButton Icon="Cancel" Label="AppBarButton"/>
-                </CommandBar>
-            </Grid>
-            <Grid Background="Green" Grid.Column="1"/>
         </Grid>
+        <Grid Background="Red" Height="104" VerticalAlignment="Bottom"/>
     </Grid>
 </Page>
