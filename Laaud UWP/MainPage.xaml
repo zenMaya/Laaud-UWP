@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBox TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="48" Background="#66FF00FF" PlaceholderText="Search" FontSize="24"/>
+        <TextBox x:Name="SearchTextBox" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="48" Background="#66FF00FF" PlaceholderText="Search" FontSize="24" TextChanged="SearchTextBox_TextChanged"/>
 
         <Grid>
             <Grid.ColumnDefinitions>
@@ -29,23 +29,39 @@
                     <ColumnDefinition Width="11*"/>
                     <ColumnDefinition Width="5*"/>
                 </Grid.ColumnDefinitions>
-                <ScrollViewer VerticalScrollBarVisibility="Hidden">
-                    <Grid Background="Blue" Margin="42,0,0,0" Grid.RowSpan="2"></Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Hidden" Grid.RowSpan="2" Margin="42,0,0,0">
+                    <ListView x:Name="SearchResults" Background="Blue">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}" 
+                                        Margin="20,0,20,8"
+                                        FontSize="24" 
+                                        FontStyle="Italic" 
+                                        FontWeight="SemiBold"
+                                        Foreground="DarkBlue" /> 
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </ScrollViewer>
-                <ScrollViewer  Grid.Column="1" Margin="0,0,0,0" VerticalScrollBarVisibility="Hidden">
-                    <Grid Background="Green" Grid.Column="1" CanDrag="True" Grid.RowSpan="2"></Grid>
+                <ScrollViewer Grid.Column="1" Grid.RowSpan="2" VerticalScrollBarVisibility="Hidden">
+                    <Grid Background="Green" CanDrag="True"></Grid>
                 </ScrollViewer>
-                <Grid HorizontalAlignment="Left" Width="42" Background="#FF00F3FF" Grid.RowSpan="2">
-                    <Button x:Name="Settings" Height="42" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <StackPanel HorizontalAlignment="Left" Width="42" Background="#FF00F3FF" Grid.RowSpan="2">
+                    <Button x:Name="Settings" Height="42" HorizontalAlignment="Stretch" >
                         <Image Source="Assets/Settings.png" Margin="-11,-1"/>
                     </Button>
-                    <Button x:Name="Favorites" Height="42" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,42,0,0">
+                    <Button x:Name="Favorites" Height="42" HorizontalAlignment="Stretch">
                         <Image Source="Assets/Favorites.png" Margin="-5,-7"/>
                     </Button>
-                    <Button x:Name="Folders" Height="42" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,84,0,0"/>
-                    <Button x:Name="Playlists" Height="42" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,126,0,0"/>
-                    <Button x:Name="About" Height="42" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,168,0,0"/>
-                </Grid>
+                    <Button x:Name="Folders" Height="42" HorizontalAlignment="Stretch" />
+                    <Button x:Name="Playlists" Height="42" HorizontalAlignment="Stretch" />
+                    <Button x:Name="About" Height="42" HorizontalAlignment="Stretch"/>
+                    <Button x:Name="AddMusicToLibrary" Height="42" HorizontalAlignment="Stretch" Click="AddMusicToLibrary_Click">
+                        <Image Source="Assets/AddMusicToLibrary.png" Margin="-11,-1"/>
+                    </Button>
+                </StackPanel>
             </Grid>
         </Grid>
         <Grid Background="Red" Height="104" VerticalAlignment="Bottom"/>

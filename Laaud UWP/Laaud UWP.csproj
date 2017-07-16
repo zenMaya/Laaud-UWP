@@ -95,13 +95,29 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Util\Log\LaaudLogger.cs" />
+    <Compile Include="Util\Log\LaaudLoggerProvider.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20170627155936_SongAlbumArtist.cs" />
+    <Compile Include="Migrations\20170627155936_SongAlbumArtist.designer.cs">
+      <DependentUpon>20170627155936_SongAlbumArtist.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\MusicLibraryContextModelSnapshot.cs" />
+    <Compile Include="Models\Album.cs" />
+    <Compile Include="Models\Artist.cs" />
+    <Compile Include="Models\MusicLibraryContext.cs" />
+    <Compile Include="Models\Song.cs" />
+    <Compile Include="LibraryLoader\DirectoryLoader.cs" />
+    <Compile Include="LibraryLoader\LibraryLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TracklistItem.xaml.cs">
       <DependentUpon>TracklistItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Util\SQLiteExtensions\LaaudSqliteCompositeMethodCallTranslator.cs" />
+    <Compile Include="Util\SQLiteExtensions\SqliteLikeTranslator.cs" />
+    <Compile Include="Util\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -144,6 +160,7 @@
     <Content Include="Assets\AppList\AppList.targetsize-96.png" />
     <Content Include="Assets\AppList\AppList.targetsize-96_altform-unplated.png" />
     <Content Include="Assets\Favorites.png" />
+    <Content Include="Assets\AddMusicToLibrary.png" />
     <Content Include="Assets\Laaud Logo.svg" />
     <Content Include="Assets\Large\Large310x310Logo.scale-100.png" />
     <Content Include="Assets\Large\Large310x310Logo.scale-125.png" />
@@ -202,8 +219,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
+      <Version>1.1.2</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+      <Version>1.1.1</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>5.2.3</Version>
+      <Version>5.2.2</Version>
+    </PackageReference>
+    <PackageReference Include="TagLibUWP">
+      <Version>0.1.25</Version>
     </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

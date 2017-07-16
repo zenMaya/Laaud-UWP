@@ -1,5 +1,13 @@
-﻿using System;
+﻿using Laaud_UWP.Models;
+using Laaud_UWP.Util.Log;
+using Laaud_UWP.Util.SQLiteExtensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -7,6 +15,8 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -30,6 +40,19 @@ namespace Laaud_UWP
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            using (MusicLibraryContext dbContext = new MusicLibraryContext())
+            {
+                IServiceProvider serviceProvider = dbContext.GetInfrastructure();
+
+                // logging
+                ILoggerFactory loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+                loggerFactory.AddProvider(new LaaudLoggerProvider());
+
+                // database creation and schema update
+                dbContext.Database.EnsureCreated();
+                dbContext.Database.Migrate();
+            }
         }
 
         /// <summary>
