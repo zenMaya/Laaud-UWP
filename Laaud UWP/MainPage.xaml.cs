@@ -9,6 +9,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -29,6 +30,7 @@ namespace Laaud_UWP
     public sealed partial class MainPage : Page
     {
         private ObservableCollection<Song> searchedSongs = new ObservableCollection<Song>();
+        private CancellationTokenSource loadingSongsCancellationTokenSource = null;
         private readonly TracklistPlayer tracklistPlayer;
 
         public MainPage()
@@ -56,8 +58,18 @@ namespace Laaud_UWP
 
             if (!string.IsNullOrWhiteSpace(searchText))
             {
+                if (this.loadingSongsCancellationTokenSource != null)
+                {
+                    this.loadingSongsCancellationTokenSource.Cancel();   
+                }
+
                 Task.Factory.StartNew(async () =>
                 {
+                    this.loadingSongsCancellationTokenSource = new CancellationTokenSource();
+                    await this.Dispatcher.RunAsync(
+                        CoreDispatcherPriority.High,
+                        new DispatchedHandler(() => this.searchedSongs.Clear()));
+
                     using (MusicLibraryContext dbContext = new MusicLibraryContext())
                     {
                         Stopwatch stopwatch = new Stopwatch();
@@ -75,8 +87,13 @@ namespace Laaud_UWP
 
                         foreach (Song song in songs)
                         {
+                            if (this.loadingSongsCancellationTokenSource.IsCancellationRequested)
+                            {
+                                return;
+                            }
+
                             await this.Dispatcher.RunAsync(
-                                CoreDispatcherPriority.Normal,
+                                CoreDispatcherPriority.Low,
                                 new DispatchedHandler(() => this.searchedSongs.Add(song)));
                         }
 
