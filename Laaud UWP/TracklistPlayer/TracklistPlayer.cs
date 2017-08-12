@@ -150,6 +150,12 @@ namespace Laaud_UWP
         public void AddSong(Song song)
         {
             this.TrackList.Add(song);
+
+            if (this.TrackList.Count == 1)
+            {
+                // after adding the first song, set it as the current one
+                this.CurrentSongIndex = 0;
+            }
         }
 
         public void RemoveSong(int songIndex)

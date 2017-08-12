@@ -16,7 +16,7 @@
                 <ColumnDefinition Width="109*"/>
             </Grid.ColumnDefinitions>
             <ScrollViewer Margin="0,48,0,69" Background="#FFE8FF00" VerticalScrollBarVisibility="Hidden">
-                <ListView x:Name="TrackList" RelativePanel.AlignTopWithPanel="True" Background="#FFD1FF00" CanDragItems="True" AllowDrop="True" DragOver="TrackList_DragOver" Drop="TrackList_Drop" SelectionChanged="TrackList_SelectionChanged">
+                <ListView x:Name="TrackList" RelativePanel.AlignTopWithPanel="True" Background="#FFD1FF00" CanDragItems="True" AllowDrop="True" DragOver="TrackList_DragOver" Drop="TrackList_Drop" IsItemClickEnabled="True" ItemClick="TrackList_ItemClick">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <local:TracklistItem></local:TracklistItem>

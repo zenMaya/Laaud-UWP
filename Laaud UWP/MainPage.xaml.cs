@@ -66,17 +66,17 @@ namespace Laaud_UWP
                             .Include(song => song.Album)
                             .ThenInclude(album => album.Artist)
                             .Where(
-                                song => song.Title.ContainsIgnoreCase(searchText) 
-                                || song.Album.Name.ContainsIgnoreCase(searchText) 
+                                song => song.Title.ContainsIgnoreCase(searchText)
+                                || song.Album.Name.ContainsIgnoreCase(searchText)
                                 || song.Album.Artist.Name.ContainsIgnoreCase(searchText))
                             .ToList();
-                        
+
                         Debug.WriteLine(stopwatch.ElapsedMilliseconds);
 
                         foreach (Song song in songs)
                         {
                             await this.Dispatcher.RunAsync(
-                                CoreDispatcherPriority.Normal, 
+                                CoreDispatcherPriority.Normal,
                                 new DispatchedHandler(() => this.searchedSongs.Add(song)));
                         }
 
@@ -117,11 +117,12 @@ namespace Laaud_UWP
             this.tracklistPlayer.AddSong(song);
         }
 
-        private void TrackList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TrackList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            if(this.TrackList.SelectedIndex != -1)
+            // play a song when an item is clicked
+            if (e.ClickedItem != null)
             {
-                this.tracklistPlayer.Play(this.TrackList.SelectedIndex);
+                this.tracklistPlayer.Play(this.tracklistPlayer.TrackList.IndexOf((Song)e.ClickedItem));
             }
         }
     }
