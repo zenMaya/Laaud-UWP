@@ -95,6 +95,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LibraryLoader\LibraryLoadProgressUpdateArgs.cs" />
     <Compile Include="Migrations\20170812131139_AddPlaylists.cs" />
     <Compile Include="Migrations\20170812131139_AddPlaylists.designer.cs">
       <DependentUpon>20170812131139_AddPlaylists.cs</DependentUpon>
@@ -110,6 +111,7 @@
     <Compile Include="TracklistPlayer\DelegateCommand.cs" />
     <Compile Include="TracklistPlayer\SongChangedEventArgs.cs" />
     <Compile Include="TracklistPlayer\TracklistPlayer.cs" />
+    <Compile Include="Util\FileUtil.cs" />
     <Compile Include="Util\SongImageUtil.cs" />
     <Compile Include="Util\Log\LaaudLogger.cs" />
     <Compile Include="Util\Log\LaaudLoggerProvider.cs" />

@@ -2,6 +2,7 @@
 using Laaud_UWP.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 using TagLibUWP;
 using Windows.Storage;
 
-namespace Laaud_UWP
+namespace Laaud_UWP.LibraryLoader
 {
     class DirectoryLoader
     {
@@ -17,21 +18,29 @@ namespace Laaud_UWP
 
         public StorageFolder RootFolder { get; private set; }
 
+        public event EventHandler<LibraryLoadProgressUpdateArgs> ProgressUpdated;
+
         public DirectoryLoader(StorageFolder rootFolder)
         {
             this.RootFolder = rootFolder;
         }
 
-        public void Read()
+        public async Task ReadAsync()
         {
-            Action<StorageFolder> directorySearch = null;
-            directorySearch = async (rootFolder) =>
+            this.RaiseProgressUpdate(0, null);
+
+            int totalFileCount = await FileUtil.GetFilesCountInAllDirectoriesAsync(this.RootFolder);
+            int progressStep = totalFileCount / 100;
+            int filesAlreadyProcessed = 0;
+            int filesAlreadyProcessedTillLastProgressUpdate = 0;
+
+            async Task directorySearch(StorageFolder rootFolder)
             {
                 // recursively search through all folders
                 IReadOnlyList<StorageFolder> folders = await rootFolder.GetFoldersAsync(Windows.Storage.Search.CommonFolderQuery.DefaultQuery);
                 foreach (StorageFolder folder in folders)
                 {
-                    directorySearch(folder);
+                    await directorySearch(folder);
                 }
 
                 using (MusicLibraryContext dbContext = new MusicLibraryContext())
@@ -39,6 +48,9 @@ namespace Laaud_UWP
                     // get all files in directory
                     foreach (StorageFile file in await rootFolder.GetFilesAsync())
                     {
+                        filesAlreadyProcessed++;
+                        filesAlreadyProcessedTillLastProgressUpdate++;
+
                         // continue for sound files only
                         if (allowedExtensions.Contains(file.FileType.ToUpperInvariant()))
                         {
@@ -69,8 +81,7 @@ namespace Laaud_UWP
                                     album = new Album()
                                     {
                                         Name = songTag.Album,
-                                        Artist = artist,
-                                        ArtistId = artist.ArtistId
+                                        Artist = artist
                                     };
 
                                     dbContext.Albums.Add(album);
@@ -107,6 +118,13 @@ namespace Laaud_UWP
                                 {
                                     await SongImageUtil.SaveImageAsync(song.SongId, songTag.Image.Data, songTag.Image.MIMEType);
                                 }
+
+                                // update progress
+                                if (filesAlreadyProcessedTillLastProgressUpdate > progressStep)
+                                {
+                                    filesAlreadyProcessedTillLastProgressUpdate = 0;
+                                    this.RaiseProgressUpdate((float)filesAlreadyProcessed / totalFileCount, song);
+                                }
                             }
                             catch (Exception)
                             {
@@ -117,7 +135,15 @@ namespace Laaud_UWP
                 }
             };
 
-            directorySearch(this.RootFolder);
+            if (totalFileCount > 0)
+            {
+                await directorySearch(this.RootFolder);
+            }
+        }
+
+        private void RaiseProgressUpdate(float progress, Song lastProcessedSong)
+        {
+            this.ProgressUpdated?.Invoke(this, new LibraryLoadProgressUpdateArgs(progress, lastProcessedSong));
         }
     }
 }

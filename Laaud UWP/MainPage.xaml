@@ -40,6 +40,11 @@
                         </ListView.ItemTemplate>
                     </ListView>
                 </ScrollViewer>
+                <Grid x:Name="AddingSongsToLibraryContainer" VerticalAlignment="Bottom" Margin="52,0,10,10" Height="48" Visibility="Collapsed">
+                    <TextBlock Margin="0,0,0,10" Text="Adding songs to library" FontSize="18" Foreground="White" HorizontalAlignment="Left" Width="225" />
+                    <TextBlock x:Name="AddingSongsToLibraryCurrentSong" Margin="225,0,0,14" FontSize="18" Foreground="White" TextAlignment="Right" RenderTransformOrigin="0.5,0.5" />
+                    <ProgressBar x:Name="AddingSongsToLibraryProgressBar" Margin="0,39,0,5" Foreground="White" Maximum="1" SmallChange="0.001" LargeChange="0.01" />
+                </Grid>
                 <ScrollViewer Grid.Column="1" Grid.RowSpan="2" VerticalScrollBarVisibility="Hidden">
                     <Grid Background="Green" CanDrag="True"></Grid>
                 </ScrollViewer>
@@ -53,7 +58,7 @@
                     <Button x:Name="Folders" Height="42" HorizontalAlignment="Stretch" />
                     <Button x:Name="Playlists" Height="42" HorizontalAlignment="Stretch" />
                     <Button x:Name="About" Height="42" HorizontalAlignment="Stretch"/>
-                    <Button x:Name="AddMusicToLibrary" Height="42" HorizontalAlignment="Stretch" Click="AddMusicToLibrary_Click">
+                    <Button x:Name="AddMusicToLibrary" Height="42" HorizontalAlignment="Stretch" Click="AddMusicToLibrary_ClickAsync">
                         <Image Source="Assets/AddMusicToLibrary.png" Margin="-11,-1"/>
                     </Button>
                 </StackPanel>

@@ -1,5 +1,6 @@
 ﻿using Laaud_UWP.Models;
 using Laaud_UWP.Util;
+using Laaud_UWP.LibraryLoader;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace Laaud_UWP
             {
                 if (this.loadingSongsCancellationTokenSource != null)
                 {
-                    this.loadingSongsCancellationTokenSource.Cancel();   
+                    this.loadingSongsCancellationTokenSource.Cancel();
                 }
 
                 Task.Factory.StartNew(async () =>
@@ -75,6 +76,7 @@ namespace Laaud_UWP
                         Stopwatch stopwatch = new Stopwatch();
                         stopwatch.Start();
                         List<Song> songs = dbContext.Songs
+                            .Take(100)
                             .Include(song => song.Album)
                             .ThenInclude(album => album.Artist)
                             .Where(
@@ -105,22 +107,48 @@ namespace Laaud_UWP
             }
         }
 
-        private void AddMusicToLibrary_Click(object sender, RoutedEventArgs e)
-        {
-            IndexLibraryAsync();
-        }
-
-        public async void IndexLibraryAsync()
+        private async void AddMusicToLibrary_ClickAsync(object sender, RoutedEventArgs e)
         {
             FolderPicker folderPicker = new FolderPicker() { SuggestedStartLocation = PickerLocationId.MusicLibrary };
             folderPicker.FileTypeFilter.Add("*");
             StorageFolder folder = await folderPicker.PickSingleFolderAsync();
             if (folder != null)
             {
-                LibraryLoader library = new LibraryLoader();
-                library.AddPath(folder);
-                library.ReloadAllPaths();
+                LibraryLoader.LibraryLoader libraryLoader = new LibraryLoader.LibraryLoader();
+                libraryLoader.ProgressUpdated += this.LibraryLoader_ProgressUpdated;
+                this.AddingSongsToLibraryContainer.Visibility = Visibility.Visible;
+
+                libraryLoader.AddPath(folder);
+                await libraryLoader.ReloadAllPathsAsync();
+
+                this.AddingSongsToLibraryContainer.Visibility = Visibility.Collapsed;
             }
+        }
+
+
+        private async void LibraryLoader_ProgressUpdated(object sender, LibraryLoadProgressUpdateArgs e)
+        {
+            await this.Dispatcher.RunAsync(CoreDispatcherPriority.Low, new DispatchedHandler(() =>
+            {
+                if (e.LastSongAdded == null)
+                {
+                    this.AddingSongsToLibraryCurrentSong.Text = "Counting files";
+                    this.AddingSongsToLibraryProgressBar.IsIndeterminate = true;
+                }
+                else
+                {
+                    if (e.LastSongAdded.Album != null && e.LastSongAdded.Album.Artist != null)
+                    {
+                        this.AddingSongsToLibraryCurrentSong.Text = string.Format("Adding {0} - {1}", e.LastSongAdded.Album.Artist.Name, e.LastSongAdded.Album.Name);
+                        if (this.AddingSongsToLibraryProgressBar.IsIndeterminate)
+                        {
+                            this.AddingSongsToLibraryProgressBar.IsIndeterminate = false;
+                        }
+
+                        this.AddingSongsToLibraryProgressBar.Value = e.Progress;
+                    }
+                }
+            }));
         }
 
         private void TrackList_DragOver(object sender, DragEventArgs e)

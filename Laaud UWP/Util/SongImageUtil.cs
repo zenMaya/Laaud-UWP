@@ -14,7 +14,7 @@ namespace Laaud_UWP.Util
         public static async Task SaveImageAsync(int songId, byte[] imageData, string imageMimetype)
         {
             StorageFolder imagesFolder = await GetImagesFolderAsync();
-            StorageFile imageFile = await imagesFolder.CreateFileAsync(songId.ToString());
+            StorageFile imageFile = await imagesFolder.CreateFileAsync(songId.ToString(), CreationCollisionOption.ReplaceExisting);
             await FileIO.WriteBytesAsync(imageFile, imageData);
         }
 
