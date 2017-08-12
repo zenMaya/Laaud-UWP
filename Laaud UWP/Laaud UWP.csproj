@@ -95,6 +95,22 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20170812131139_AddPlaylists.cs" />
+    <Compile Include="Migrations\20170812131139_AddPlaylists.designer.cs">
+      <DependentUpon>20170812131139_AddPlaylists.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Playlist.cs" />
+    <Compile Include="Models\PlaylistItem.cs" />
+    <Compile Include="SearchResultSong.xaml.cs">
+      <DependentUpon>SearchResultSong.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TracklistPlayerControls.xaml.cs">
+      <DependentUpon>TracklistPlayerControls.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TracklistPlayer\DelegateCommand.cs" />
+    <Compile Include="TracklistPlayer\SongChangedEventArgs.cs" />
+    <Compile Include="TracklistPlayer\TracklistPlayer.cs" />
+    <Compile Include="Util\SongImageUtil.cs" />
     <Compile Include="Util\Log\LaaudLogger.cs" />
     <Compile Include="Util\Log\LaaudLoggerProvider.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -213,7 +229,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="SearchResultSong.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="TracklistItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TracklistPlayerControls.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

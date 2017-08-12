@@ -1,4 +1,5 @@
 ﻿using Laaud_UWP.Models;
+using Laaud_UWP.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,22 +45,68 @@ namespace Laaud_UWP
                             try
                             {
                                 // try searching for an existing song in the DB by the path
-                                Song existingSong = dbContext.Songs.FirstOrDefault(song => song.Path == file.Path);
-                                if (existingSong == null)
+                                Tag songTag = await Task.Run(() => TagManager.ReadFile(file).Tag);
+
+                                // search for an existing artist by name
+                                Artist artist = dbContext.Artists.FirstOrDefault(_artist => _artist.Name == songTag.Artist);
+                                if (artist == null)
                                 {
                                     // if not found, create a new one
-                                    Song newSong = new Song();
-                                    newSong.ReadFromTag(await Task.Run(() => TagManager.ReadFile(file).Tag), dbContext);
-                                    dbContext.Songs.Add(newSong);
-                                }
-                                else
-                                {
-                                    // if found, only update its info
-                                    existingSong.ReadFromTag(TagManager.ReadFile(file).Tag, dbContext);
+                                    artist = new Artist()
+                                    {
+                                        Name = songTag.Artist
+                                    };
+
+                                    dbContext.Artists.Add(artist);
+                                    dbContext.SaveChanges();
                                 }
 
-                                // save create/update action to DB
+                                // search for an existing album by name
+                                Album album = dbContext.Albums.FirstOrDefault(_album => _album.Name == songTag.Album);
+                                if (album == null)
+                                {
+                                    // if not found, create a new one
+                                    album = new Album()
+                                    {
+                                        Name = songTag.Album,
+                                        Artist = artist,
+                                        ArtistId = artist.ArtistId
+                                    };
+
+                                    dbContext.Albums.Add(album);
+                                    dbContext.SaveChanges();
+                                }
+
+                                Song song = dbContext.Songs.FirstOrDefault(_song => _song.Path == file.Path);
+                                if (song == null)
+                                {
+                                    // if not found, create a new one
+                                    song = new Song()
+                                    {
+                                        Path = file.Path
+                                    };
+
+                                    dbContext.Songs.Add(song);
+                                }
+
+                                // set reference to the album
+                                song.Album = album;
+
+                                // load other simpler properties
+                                song.Year = (int)songTag.Year;
+                                song.Track = (int)songTag.Track;
+                                song.Title = songTag.Title;
+                                song.Genre = songTag.Genre;
+                                song.Comment = songTag.Comment;
+
+                                // insert/update to DB
                                 dbContext.SaveChanges();
+
+                                // save image to localappdata
+                                if (songTag.Image != null)
+                                {
+                                    await SongImageUtil.SaveImageAsync(song.SongId, songTag.Image.Data, songTag.Image.MIMEType);
+                                }
                             }
                             catch (Exception)
                             {

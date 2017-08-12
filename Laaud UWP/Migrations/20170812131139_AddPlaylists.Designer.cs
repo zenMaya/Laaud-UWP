@@ -8,9 +8,10 @@ using Laaud_UWP.Models;
 namespace Laaud_UWP.Migrations
 {
     [DbContext(typeof(MusicLibraryContext))]
-    partial class MusicLibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20170812131139_AddPlaylists")]
+    partial class AddPlaylists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2");
@@ -53,7 +54,7 @@ namespace Laaud_UWP.Migrations
 
                     b.HasKey("PlaylistId");
 
-                    b.ToTable("Playlists");
+                    b.ToTable("Playlist");
                 });
 
             modelBuilder.Entity("Laaud_UWP.Models.PlaylistItem", b =>
@@ -73,7 +74,7 @@ namespace Laaud_UWP.Migrations
 
                     b.HasIndex("SongId");
 
-                    b.ToTable("PlaylistItems");
+                    b.ToTable("PlaylistItem");
                 });
 
             modelBuilder.Entity("Laaud_UWP.Models.Song", b =>
@@ -89,6 +90,8 @@ namespace Laaud_UWP.Migrations
 
                     b.Property<string>("Path");
 
+                    b.Property<int?>("PlaylistId");
+
                     b.Property<string>("Title");
 
                     b.Property<int>("Track");
@@ -98,6 +101,8 @@ namespace Laaud_UWP.Migrations
                     b.HasKey("SongId");
 
                     b.HasIndex("AlbumId");
+
+                    b.HasIndex("PlaylistId");
 
                     b.ToTable("Songs");
                 });
@@ -129,6 +134,10 @@ namespace Laaud_UWP.Migrations
                         .WithMany("Songs")
                         .HasForeignKey("AlbumId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Laaud_UWP.Models.Playlist")
+                        .WithMany("Songs")
+                        .HasForeignKey("PlaylistId");
                 });
         }
     }

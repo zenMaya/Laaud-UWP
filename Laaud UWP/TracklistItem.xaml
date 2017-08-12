@@ -5,15 +5,11 @@
     xmlns:local="using:Laaud_UWP"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Height="192.5" Width="465">
+    mc:Ignorable="d"
+    d:DesignWidth="400" Height="68">
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="203*"/>
-            <ColumnDefinition Width="263*"/>
-        </Grid.ColumnDefinitions>
-        <Image x:Name="TrackImage" HorizontalAlignment="Left" Width="200"/>
-        <TextBlock x:Name="TrackName" Margin="2,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="113" Grid.Column="1"/>
-        <TextBlock x:Name="TrackInfo" Margin="2,0,0,0" TextWrapping="Wrap" Grid.Column="1" Height="80" VerticalAlignment="Bottom"/>
+        <TextBlock x:Name="TrackName" Margin="10,10,10,0" TextWrapping="Wrap" Text="{Binding Title}" VerticalAlignment="Top" Height="27" FontSize="16" />
+        <TextBlock x:Name="TrackInfo" Margin="10,37,10,0" TextWrapping="Wrap" Text="{Binding Album.Name}" Height="21" VerticalAlignment="Top" FontSize="12"/>
     </Grid>
 </UserControl>

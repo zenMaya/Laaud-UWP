@@ -1,5 +1,6 @@
 ﻿using Laaud_UWP.Models;
 using Laaud_UWP.Util;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +14,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -27,12 +29,15 @@ namespace Laaud_UWP
     public sealed partial class MainPage : Page
     {
         private ObservableCollection<Song> searchedSongs = new ObservableCollection<Song>();
+        private readonly TracklistPlayer tracklistPlayer = new TracklistPlayer();
 
         public MainPage()
         {
             this.InitializeComponent();
 
             this.SearchResults.ItemsSource = this.searchedSongs;
+            this.TrackList.ItemsSource = this.tracklistPlayer.TrackList;
+            this.TracklistPlayerControl.DataContext = this.tracklistPlayer;
         }
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -49,7 +54,14 @@ namespace Laaud_UWP
                     {
                         Stopwatch stopwatch = new Stopwatch();
                         stopwatch.Start();
-                        List<Song> songs = dbContext.Songs.Where(song => song.Title.ContainsIgnoreCase(searchText)).ToList();
+                        List<Song> songs = dbContext.Songs
+                            .Include(song => song.Album)
+                            .ThenInclude(album => album.Artist)
+                            .Where(
+                                song => song.Title.ContainsIgnoreCase(searchText) 
+                                || song.Album.Name.ContainsIgnoreCase(searchText) 
+                                || song.Album.Artist.Name.ContainsIgnoreCase(searchText))
+                            .ToList();
                         
                         Debug.WriteLine(stopwatch.ElapsedMilliseconds);
 
@@ -59,6 +71,7 @@ namespace Laaud_UWP
                                 CoreDispatcherPriority.Normal, 
                                 new DispatchedHandler(() => this.searchedSongs.Add(song)));
                         }
+
                         stopwatch.Stop();
                         Debug.WriteLine(stopwatch.ElapsedMilliseconds);
                     }
@@ -76,9 +89,29 @@ namespace Laaud_UWP
             FolderPicker folderPicker = new FolderPicker() { SuggestedStartLocation = PickerLocationId.MusicLibrary };
             folderPicker.FileTypeFilter.Add("*");
             StorageFolder folder = await folderPicker.PickSingleFolderAsync();
-            LibraryLoader library = new LibraryLoader();
-            library.AddPath(folder);
-            library.ReloadAllPaths();
+            if (folder != null)
+            {
+                LibraryLoader library = new LibraryLoader();
+                library.AddPath(folder);
+                library.ReloadAllPaths();
+            }
+        }
+
+        private void TrackList_DragOver(object sender, DragEventArgs e)
+        {
+            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+        }
+
+        private void TrackList_Drop(object sender, DragEventArgs e)
+        {
+            Song song = (Song)e.DataView.Properties["song"];
+
+            this.tracklistPlayer.AddSong(song);
+        }
+
+        private async void TrackList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Song clickedSong = (Song)e.AddedItems.First();
         }
     }
 }

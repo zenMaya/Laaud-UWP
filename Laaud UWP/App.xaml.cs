@@ -51,7 +51,6 @@ namespace Laaud_UWP
 
                 // database creation and schema update
                 dbContext.Database.EnsureCreated();
-                dbContext.Database.Migrate();
             }
         }
 

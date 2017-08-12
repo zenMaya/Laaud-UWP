@@ -10,21 +10,23 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TextBox x:Name="SearchTextBox" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="48" Background="#66FF00FF" PlaceholderText="Search" FontSize="24" TextChanged="SearchTextBox_TextChanged"/>
 
-        <Grid>
+        <Grid Margin="0,0,0,100">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition Width="300"/>
                 <ColumnDefinition Width="109*"/>
             </Grid.ColumnDefinitions>
-            <ScrollViewer Margin="0,48,0,166" Background="#FFE8FF00" VerticalScrollBarVisibility="Hidden">
-                <StackPanel x:Name = "TrackList" RelativePanel.AlignTopWithPanel="True" Background="#FFD1FF00">
-                    <local:TracklistItem>
-
-                    </local:TracklistItem>
-                </StackPanel>
+            <ScrollViewer Margin="0,48,0,69" Background="#FFE8FF00" VerticalScrollBarVisibility="Hidden">
+                <ListView x:Name="TrackList" RelativePanel.AlignTopWithPanel="True" Background="#FFD1FF00" CanDragItems="True" AllowDrop="True" DragOver="TrackList_DragOver" Drop="TrackList_Drop" SelectionChanged="TrackList_SelectionChanged">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <local:TracklistItem></local:TracklistItem>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </ScrollViewer>
-            <Grid Margin="0,0,0,102" Background="#FFFFFF34" Height="64" VerticalAlignment="Bottom"/>
+            <Grid Margin="0,0,0,0" Background="#FFFFFF34" Height="64" VerticalAlignment="Bottom"/>
 
-            <Grid Margin="0,48,0,104" Grid.Column="1">
+            <Grid Margin="0,48,0,0" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="11*"/>
                     <ColumnDefinition Width="5*"/>
@@ -33,14 +35,7 @@
                     <ListView x:Name="SearchResults" Background="Blue">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Title}" 
-                                        Margin="20,0,20,8"
-                                        FontSize="24" 
-                                        FontStyle="Italic" 
-                                        FontWeight="SemiBold"
-                                        Foreground="DarkBlue" /> 
-                                </StackPanel>
+                                <local:SearchResultSong></local:SearchResultSong>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
@@ -64,6 +59,6 @@
                 </StackPanel>
             </Grid>
         </Grid>
-        <Grid Background="Red" Height="104" VerticalAlignment="Bottom"/>
+        <local:TracklistPlayerControls x:Name="TracklistPlayerControl" Background="Red" Height="100" VerticalAlignment="Bottom"/>
     </Grid>
 </Page>

@@ -1,0 +1,24 @@
+﻿<UserControl
+    x:Class="Laaud_UWP.TracklistPlayerControls"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Laaud_UWP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Height="100"
+    d:DesignHeight="100"
+    d:DesignWidth="500">
+
+    <Grid>
+        <Image x:Name="SongImage" HorizontalAlignment="Left" Height="80" Margin="10,10,0,0" VerticalAlignment="Top" Width="80" />
+        <TextBlock x:Name="SongTitleTextBlock" HorizontalAlignment="Left" Margin="95,20,0,0" TextWrapping="Wrap" Text="{Binding CurrentSong.Title}" VerticalAlignment="Top" FontSize="18"/>
+        <TextBlock x:Name="ArtistNameTextBlock" HorizontalAlignment="Left" Margin="95,49,0,0" TextWrapping="Wrap" Text="{Binding CurrentSong.Album.Artist.Name}" VerticalAlignment="Top" FontSize="14"/>
+        <CommandBar x:Name="ControlsPanel" HorizontalAlignment="Right" Height="90">
+            <AppBarButton x:Name="PlayPauseButton" Content="Play/Pause" VerticalAlignment="Stretch" Command="{Binding PlayPauseCommand}"/>
+            <AppBarButton x:Name="PreviousButton" Content="Previous"  VerticalAlignment="Stretch" Command="{Binding PreviousCommand}"/>
+            <AppBarButton x:Name="NextButton" Content="Next"  VerticalAlignment="Stretch" Command="{Binding NextCommand}"/>
+        </CommandBar>
+        
+    </Grid>
+</UserControl>
