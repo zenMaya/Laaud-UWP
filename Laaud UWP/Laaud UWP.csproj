@@ -113,8 +113,8 @@
     <Compile Include="TracklistPlayer\TracklistPlayer.cs" />
     <Compile Include="Util\FileUtil.cs" />
     <Compile Include="Util\SongImageUtil.cs" />
-    <Compile Include="Util\Log\LaaudLogger.cs" />
-    <Compile Include="Util\Log\LaaudLoggerProvider.cs" />
+    <Compile Include="Util\Logging\LaaudLogger.cs" />
+    <Compile Include="Util\Logging\LaaudLoggerProvider.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
