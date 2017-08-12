@@ -58,10 +58,11 @@
                     </Button>
                     <Button x:Name="Folders" Height="42" HorizontalAlignment="Stretch" />
                     <Button x:Name="Playlists" Height="42" HorizontalAlignment="Stretch" />
-                    <Button x:Name="About" Height="42" HorizontalAlignment="Stretch"/>
+                    <Button x:Name="ChangeViewType" Height="42" HorizontalAlignment="Stretch" />
                     <Button x:Name="AddMusicToLibrary" Height="42" HorizontalAlignment="Stretch" Click="AddMusicToLibrary_ClickAsync">
                         <Image Source="Assets/AddMusicToLibrary.png" Margin="-11,-1"/>
                     </Button>
+                    <Button x:Name="About" Height="42" HorizontalAlignment="Stretch"/>
                 </StackPanel>
             </Grid>
         </Grid>
