@@ -52,6 +52,7 @@
                     <Button x:Name="Settings" Height="42" HorizontalAlignment="Stretch" >
                         <Image Source="Assets/Settings.png" Margin="-11,-1"/>
                     </Button>
+                    <Button x:Name="Home" Height="42" HorizontalAlignment="Stretch" />
                     <Button x:Name="Favorites" Height="42" HorizontalAlignment="Stretch">
                         <Image Source="Assets/Favorites.png" Margin="-5,-7"/>
                     </Button>
