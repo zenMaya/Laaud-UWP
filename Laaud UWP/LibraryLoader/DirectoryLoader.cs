@@ -32,7 +32,7 @@ namespace Laaud_UWP.LibraryLoader
             int totalFileCount = await FileUtil.GetFilesCountInAllDirectoriesAsync(this.RootFolder);
             int progressStep = totalFileCount / 100;
             int filesAlreadyProcessed = 0;
-            int filesAlreadyProcessedTillLastProgressUpdate = 0;
+            int filesAlreadyProcessedTillLastProgressUpdate = progressStep + 1; // set so that we get status update as soon as we start updating the DB
 
             async Task directorySearch(StorageFolder rootFolder)
             {
