@@ -76,7 +76,6 @@ namespace Laaud_UWP
                         Stopwatch stopwatch = new Stopwatch();
                         stopwatch.Start();
                         List<Song> songs = dbContext.Songs
-                            .Take(100)
                             .Include(song => song.Album)
                             .ThenInclude(album => album.Artist)
                             .Where(
@@ -84,6 +83,7 @@ namespace Laaud_UWP
                                 || song.Album.Name.ContainsIgnoreCase(searchText)
                                 || song.Album.Artist.Name.ContainsIgnoreCase(searchText))
                             .OrderBy(song => song.Title)
+                            .Take(100)
                             .ToList();
 
                         Debug.WriteLine(stopwatch.ElapsedMilliseconds);
