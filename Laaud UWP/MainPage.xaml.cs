@@ -29,15 +29,23 @@ namespace Laaud_UWP
     public sealed partial class MainPage : Page
     {
         private ObservableCollection<Song> searchedSongs = new ObservableCollection<Song>();
-        private readonly TracklistPlayer tracklistPlayer = new TracklistPlayer();
+        private readonly TracklistPlayer tracklistPlayer;
 
         public MainPage()
         {
             this.InitializeComponent();
 
+            this.tracklistPlayer = new TracklistPlayer();
+            this.tracklistPlayer.SongChanged += this.TracklistPlayer_SongChanged;
+
             this.SearchResults.ItemsSource = this.searchedSongs;
             this.TrackList.ItemsSource = this.tracklistPlayer.TrackList;
             this.TracklistPlayerControl.SetTracklistPlayer(this.tracklistPlayer);
+        }
+
+        private void TracklistPlayer_SongChanged(object sender, SongChangedEventArgs e)
+        {
+            this.TrackList.SelectedIndex = e.NewSongIndex;
         }
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -109,9 +117,12 @@ namespace Laaud_UWP
             this.tracklistPlayer.AddSong(song);
         }
 
-        private async void TrackList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TrackList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Song clickedSong = (Song)e.AddedItems.First();
+            if(this.TrackList.SelectedIndex != -1)
+            {
+                this.tracklistPlayer.Play(this.TrackList.SelectedIndex);
+            }
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Laaud_UWP
             private set
             {
                 this.currentSongIndex = value;
-                this.SongChanged(this, new SongChangedEventArgs(this.CurrentSong));
+                this.SongChanged(this, new SongChangedEventArgs(this.CurrentSong, this.CurrentSongIndex));
                 this.RaisePropertyChanged(nameof(CurrentSongIndex));
             }
         }
