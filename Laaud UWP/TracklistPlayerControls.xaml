@@ -15,7 +15,7 @@
         <TextBlock x:Name="SongTitleTextBlock" HorizontalAlignment="Left" Margin="95,20,0,0" TextWrapping="Wrap" Text="{Binding CurrentSong.Title}" VerticalAlignment="Top" FontSize="18"/>
         <TextBlock x:Name="ArtistNameTextBlock" HorizontalAlignment="Left" Margin="95,49,0,0" TextWrapping="Wrap" Text="{Binding CurrentSong.Album.Artist.Name}" VerticalAlignment="Top" FontSize="14"/>
         <CommandBar x:Name="ControlsPanel" HorizontalAlignment="Right" Height="90">
-            <AppBarButton x:Name="PlayPauseButton" Content="Play/Pause" VerticalAlignment="Stretch" Command="{Binding PlayPauseCommand}"/>
+            <AppBarButton x:Name="PlayPauseButton" Content="{Binding PlayButtonText}" VerticalAlignment="Stretch" Command="{Binding PlayPauseCommand}"/>
             <AppBarButton x:Name="PreviousButton" Content="Previous"  VerticalAlignment="Stretch" Command="{Binding PreviousCommand}"/>
             <AppBarButton x:Name="NextButton" Content="Next"  VerticalAlignment="Stretch" Command="{Binding NextCommand}"/>
         </CommandBar>

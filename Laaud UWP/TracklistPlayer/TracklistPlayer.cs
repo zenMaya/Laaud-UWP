@@ -1,4 +1,5 @@
-﻿using Laaud_UWP.Models;
+﻿using Com.PhilChuang.Utils.MvvmNotificationChainer;
+using Laaud_UWP.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,7 @@ namespace Laaud_UWP
     {
         private readonly MediaElement player = new MediaElement();
         private readonly Random random = new Random();
+        private readonly NotificationChainManager notificationChainManager = new NotificationChainManager();
 
         private bool playing;
         private int currentSongIndex;
@@ -49,22 +51,6 @@ namespace Laaud_UWP
                 this.currentSongIndex = value;
                 this.SongChanged(this, new SongChangedEventArgs(this.CurrentSong));
                 this.RaisePropertyChanged(nameof(CurrentSongIndex));
-                this.RaisePropertyChanged(nameof(CurrentSong));
-            }
-        }
-
-        public Song CurrentSong
-        {
-            get
-            {
-                if (this.CurrentSongIndex < this.TrackList.Count)
-                {
-                    return this.TrackList[this.CurrentSongIndex];
-                }
-                else
-                {
-                    return null;
-                }
             }
         }
 
@@ -102,12 +88,59 @@ namespace Laaud_UWP
             }
         }
 
+        #region Calculated properties
+
+        public Song CurrentSong
+        {
+            get
+            {
+                this.notificationChainManager
+                    .CreateOrGet()
+                    .Configure(c => c.On(() => this.CurrentSongIndex))
+                    .Finish();
+
+                if (this.CurrentSongIndex < this.TrackList.Count)
+                {
+                    return this.TrackList[this.CurrentSongIndex];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public string PlayButtonText
+        {
+            get
+            {
+                this.notificationChainManager
+                    .CreateOrGet()
+                    .Configure(c => c.On(() => this.Playing))
+                    .Finish();
+
+                if (this.Playing)
+                {
+                    return "Pause";
+                }
+                else
+                {
+                    return "Play";
+                }
+            }
+        }
+
+        #endregion
+
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         public event EventHandler<SongChangedEventArgs> SongChanged = delegate { };
 
         public TracklistPlayer()
         {
+            this.notificationChainManager.Observe(this);
+            this.notificationChainManager.AddDefaultCall((sender, notifyingProperty, dependentProperty) => RaisePropertyChanged(dependentProperty));
+
             this.TrackList = new ObservableCollection<Song>();
             this.PlayPauseCommand = new DelegateCommand(this.PlayPause);
             this.NextCommand = new DelegateCommand(this.NextSong);
@@ -205,14 +238,17 @@ namespace Laaud_UWP
 
         public void Play(int index)
         {
-            if (this.player.CurrentState == Windows.UI.Xaml.Media.MediaElementState.Closed || this.CurrentSongIndex != index)
+            if (this.TrackList.Count > 0)
             {
-                this.CurrentSongIndex = index;
-                this.LoadCurrentSongToPlayer();
-            }
+                if (this.player.CurrentState == Windows.UI.Xaml.Media.MediaElementState.Closed || this.CurrentSongIndex != index)
+                {
+                    this.CurrentSongIndex = index;
+                    this.LoadCurrentSongToPlayer();
+                }
 
-            this.player.Play();
-            this.Playing = true;
+                this.player.Play();
+                this.Playing = true;
+            }
         }
 
         private async void LoadCurrentSongToPlayer()
