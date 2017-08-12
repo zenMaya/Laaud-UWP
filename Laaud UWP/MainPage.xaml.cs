@@ -37,7 +37,7 @@ namespace Laaud_UWP
 
             this.SearchResults.ItemsSource = this.searchedSongs;
             this.TrackList.ItemsSource = this.tracklistPlayer.TrackList;
-            this.TracklistPlayerControl.DataContext = this.tracklistPlayer;
+            this.TracklistPlayerControl.SetTracklistPlayer(this.tracklistPlayer);
         }
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
