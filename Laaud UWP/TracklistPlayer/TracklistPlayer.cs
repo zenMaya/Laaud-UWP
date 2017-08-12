@@ -139,12 +139,12 @@ namespace Laaud_UWP
                     // remove the code below when implementing
                     if (this.CurrentSongIndex != 0)
                     {
-                        this.SetAndPlay(this.CurrentSongIndex - 1);
+                        this.Play(this.CurrentSongIndex - 1);
                     }
                 }
                 else if (this.CurrentSongIndex != 0)
                 {
-                    this.SetAndPlay(this.CurrentSongIndex - 1);
+                    this.Play(this.CurrentSongIndex - 1);
                 }
             }
         }
@@ -155,15 +155,15 @@ namespace Laaud_UWP
             {
                 if (this.Shuffle)
                 {
-                    this.SetAndPlay(this.random.Next(this.TrackList.Count - 1));
+                    this.Play(this.random.Next(this.TrackList.Count - 1));
                 }
                 else if (this.CurrentSongIndex == this.TrackList.Count - 1)
                 {
-                    this.SetAndPlay(0);
+                    this.Play(0);
                 }
                 else
                 {
-                    this.SetAndPlay(this.CurrentSongIndex + 1);
+                    this.Play(this.CurrentSongIndex + 1);
                 }
             }
         }
@@ -178,12 +178,6 @@ namespace Laaud_UWP
             {
                 this.Play();
             }
-        }
-
-        public void Play()
-        {
-            this.player.Play();
-            this.Playing = true;
         }
 
         public void Pause()
@@ -204,11 +198,21 @@ namespace Laaud_UWP
             this.CurrentSongIndex = 0;
         }
 
-        public void SetAndPlay(int index)
+        public void Play()
         {
-            this.CurrentSongIndex = index;
-            this.LoadCurrentSongToPlayer();
-            this.Play();
+            this.Play(this.CurrentSongIndex);
+        }
+
+        public void Play(int index)
+        {
+            if (this.player.CurrentState == Windows.UI.Xaml.Media.MediaElementState.Closed || this.CurrentSongIndex != index)
+            {
+                this.CurrentSongIndex = index;
+                this.LoadCurrentSongToPlayer();
+            }
+
+            this.player.Play();
+            this.Playing = true;
         }
 
         private async void LoadCurrentSongToPlayer()
