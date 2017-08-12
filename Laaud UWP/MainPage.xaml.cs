@@ -81,6 +81,7 @@ namespace Laaud_UWP
                                 song => song.Title.ContainsIgnoreCase(searchText)
                                 || song.Album.Name.ContainsIgnoreCase(searchText)
                                 || song.Album.Artist.Name.ContainsIgnoreCase(searchText))
+                            .OrderBy(song => song.Title)
                             .ToList();
 
                         Debug.WriteLine(stopwatch.ElapsedMilliseconds);
