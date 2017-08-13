@@ -8,9 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Windows.Media;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Laaud_UWP.TracklistPlayer
 {
@@ -20,6 +23,7 @@ namespace Laaud_UWP.TracklistPlayer
         private readonly Random random = new Random();
         private readonly MediaElement player;
         private readonly NotificationChainManager notificationChainManager = new NotificationChainManager();
+        private readonly SystemMediaTransportControls systemMediaControls;
 
         private bool playing;
         private int currentSongIndex;
@@ -172,11 +176,40 @@ namespace Laaud_UWP.TracklistPlayer
             this.player.CurrentStateChanged += this.Player_CurrentStateChanged;
             this.player.MediaEnded += this.Player_MediaEnded;
 
+            this.systemMediaControls = SystemMediaTransportControls.GetForCurrentView();
+            this.systemMediaControls.IsPlayEnabled = true;
+            this.systemMediaControls.IsPauseEnabled = true;
+            this.systemMediaControls.IsNextEnabled = true;
+            this.systemMediaControls.IsPreviousEnabled = true;
+            this.systemMediaControls.ButtonPressed += this.SystemMediaControls_ButtonPressedAsync;
+
             this.TrackList = new ObservableCollection<Song>();
             this.PlayPauseCommand = new DelegateCommand(this.PlayPause);
             this.NextCommand = new DelegateCommand(() => this.NextSong(false));
             this.PreviousCommand = new DelegateCommand(this.PreviousSong);
             this.RepeatCommand = new DelegateCommand(this.ToggleRepeat);
+        }
+
+        private async void SystemMediaControls_ButtonPressedAsync(SystemMediaTransportControls sender, SystemMediaTransportControlsButtonPressedEventArgs args)
+        {
+            await this.player.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                switch (args.Button)
+                {
+                    case SystemMediaTransportControlsButton.Play:
+                        this.Play();
+                        break;
+                    case SystemMediaTransportControlsButton.Pause:
+                        this.Pause();
+                        break;
+                    case SystemMediaTransportControlsButton.Next:
+                        this.NextSong(false);
+                        break;
+                    case SystemMediaTransportControlsButton.Previous:
+                        this.PreviousSong();
+                        break;
+                }
+            });
         }
 
         private void Player_MediaEnded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -188,15 +221,32 @@ namespace Laaud_UWP.TracklistPlayer
         {
             switch (this.player.CurrentState)
             {
-                case Windows.UI.Xaml.Media.MediaElementState.Closed:
-                case Windows.UI.Xaml.Media.MediaElementState.Paused:
-                case Windows.UI.Xaml.Media.MediaElementState.Stopped:
+                case MediaElementState.Closed:
+                case MediaElementState.Paused:
+                case MediaElementState.Stopped:
                     this.Playing = false;
                     break;
-                case Windows.UI.Xaml.Media.MediaElementState.Buffering:
-                case Windows.UI.Xaml.Media.MediaElementState.Opening:
-                case Windows.UI.Xaml.Media.MediaElementState.Playing:
+                case MediaElementState.Buffering:
+                case MediaElementState.Opening:
+                case MediaElementState.Playing:
                     this.Playing = true;
+                    break;
+            }
+
+            switch (this.player.CurrentState)
+            {
+                case MediaElementState.Playing:
+                    this.systemMediaControls.PlaybackStatus = MediaPlaybackStatus.Playing;
+                    break;
+                case MediaElementState.Opening:
+                case MediaElementState.Buffering:
+                    this.systemMediaControls.PlaybackStatus = MediaPlaybackStatus.Changing;
+                    break;
+                case MediaElementState.Paused:
+                    this.systemMediaControls.PlaybackStatus = MediaPlaybackStatus.Paused;
+                    break;
+                case MediaElementState.Closed:
+                    this.systemMediaControls.PlaybackStatus = MediaPlaybackStatus.Closed;
                     break;
             }
         }
