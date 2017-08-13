@@ -18,6 +18,7 @@
             <AppBarButton x:Name="PlayPauseButton" Content="{Binding PlayButtonText}" VerticalAlignment="Stretch" Command="{Binding PlayPauseCommand}"/>
             <AppBarButton x:Name="PreviousButton" Content="Previous"  VerticalAlignment="Stretch" Command="{Binding PreviousCommand}"/>
             <AppBarButton x:Name="NextButton" Content="Next"  VerticalAlignment="Stretch" Command="{Binding NextCommand}"/>
+            <AppBarButton x:Name="RepeatButton" Content="{Binding RepeatButtonText}"  VerticalAlignment="Stretch" Command="{Binding RepeatCommand}"/>
         </CommandBar>
         
     </Grid>

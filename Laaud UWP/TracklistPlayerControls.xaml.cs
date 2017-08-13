@@ -28,7 +28,7 @@ namespace Laaud_UWP
             this.InitializeComponent();
         }
 
-        public void SetTracklistPlayer(TracklistPlayer tracklistPlayer)
+        public void SetTracklistPlayer(TracklistPlayer.TracklistPlayer tracklistPlayer)
         {
             this.DataContext = tracklistPlayer;
             tracklistPlayer.SongChanged += (sender, args) => this.LoadImageForSong(args.NewSong);

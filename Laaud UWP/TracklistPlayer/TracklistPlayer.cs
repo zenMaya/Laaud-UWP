@@ -12,17 +12,18 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
 
-namespace Laaud_UWP
+namespace Laaud_UWP.TracklistPlayer
 {
     public class TracklistPlayer : INotifyPropertyChanged
     {
-        private readonly MediaElement player = new MediaElement();
+        private static readonly List<RepeatMode> repeatModes = new List<RepeatMode>() { RepeatMode.NoRepeat, RepeatMode.RepeatPlaylist, RepeatMode.RepeatSong };
         private readonly Random random = new Random();
+        private readonly MediaElement player;
         private readonly NotificationChainManager notificationChainManager = new NotificationChainManager();
 
         private bool playing;
         private int currentSongIndex;
-        private bool repeat;
+        private RepeatMode repeatMode;
         private bool shuffle;
 
         public bool Playing
@@ -60,18 +61,21 @@ namespace Laaud_UWP
 
         public ICommand PreviousCommand { get; }
 
+        public ICommand RepeatCommand { get; }
+
         public ObservableCollection<Song> TrackList { get; }
 
-        public bool Repeat
+        public RepeatMode RepeatMode
         {
             get
             {
-                return this.repeat;
+                return this.repeatMode;
             }
 
             set
             {
-                this.repeat = value;
+                this.repeatMode = value;
+                this.RaisePropertyChanged(nameof(RepeatMode));
             }
         }
 
@@ -130,21 +134,71 @@ namespace Laaud_UWP
             }
         }
 
+        public string RepeatButtonText
+        {
+            get
+            {
+                this.notificationChainManager
+                    .CreateOrGet()
+                    .Configure(c => c.On(() => this.RepeatMode))
+                    .Finish();
+
+                switch (this.RepeatMode)
+                {
+                    case RepeatMode.NoRepeat:
+                        return "No repeat";
+                    case RepeatMode.RepeatPlaylist:
+                        return "Repeat playlist";
+                    case RepeatMode.RepeatSong:
+                        return "Repeat song";
+                    default:
+                        throw new Exception("Unknown RepeatMode");
+                }
+            }
+        }
+
         #endregion
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         public event EventHandler<SongChangedEventArgs> SongChanged = delegate { };
 
-        public TracklistPlayer()
+        public TracklistPlayer(MediaElement mediaElement)
         {
             this.notificationChainManager.Observe(this);
             this.notificationChainManager.AddDefaultCall((sender, notifyingProperty, dependentProperty) => RaisePropertyChanged(dependentProperty));
 
+            this.player = mediaElement;
+            this.player.CurrentStateChanged += this.Player_CurrentStateChanged;
+            this.player.MediaEnded += this.Player_MediaEnded;
+
             this.TrackList = new ObservableCollection<Song>();
             this.PlayPauseCommand = new DelegateCommand(this.PlayPause);
-            this.NextCommand = new DelegateCommand(this.NextSong);
+            this.NextCommand = new DelegateCommand(() => this.NextSong(false));
             this.PreviousCommand = new DelegateCommand(this.PreviousSong);
+            this.RepeatCommand = new DelegateCommand(this.ToggleRepeat);
+        }
+
+        private void Player_MediaEnded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            this.NextSong(true);
+        }
+
+        private void Player_CurrentStateChanged(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            switch (this.player.CurrentState)
+            {
+                case Windows.UI.Xaml.Media.MediaElementState.Closed:
+                case Windows.UI.Xaml.Media.MediaElementState.Paused:
+                case Windows.UI.Xaml.Media.MediaElementState.Stopped:
+                    this.Playing = false;
+                    break;
+                case Windows.UI.Xaml.Media.MediaElementState.Buffering:
+                case Windows.UI.Xaml.Media.MediaElementState.Opening:
+                case Windows.UI.Xaml.Media.MediaElementState.Playing:
+                    this.Playing = true;
+                    break;
+            }
         }
 
         public void AddSong(Song song)
@@ -154,7 +208,7 @@ namespace Laaud_UWP
             if (this.TrackList.Count == 1)
             {
                 // after adding the first song, set it as the current one
-                this.CurrentSongIndex = 0;
+                this.SetSong(0);
             }
         }
 
@@ -164,7 +218,7 @@ namespace Laaud_UWP
 
             if (songIndex == this.CurrentSongIndex)
             {
-                this.NextSong();
+                this.NextSong(false);
             }
         }
 
@@ -188,17 +242,32 @@ namespace Laaud_UWP
             }
         }
 
-        public void NextSong()
+        public void NextSong(bool respectRepeat)
         {
             if (this.TrackList.Count > 0)
             {
-                if (this.Shuffle)
+                if (respectRepeat && this.RepeatMode == RepeatMode.RepeatSong)
                 {
-                    this.Play(this.random.Next(this.TrackList.Count - 1));
+                    this.Play();
                 }
                 else if (this.CurrentSongIndex == this.TrackList.Count - 1)
                 {
-                    this.Play(0);
+                    if (respectRepeat)
+                    {
+                        if (this.RepeatMode == RepeatMode.RepeatPlaylist)
+                        {
+                            this.Play(0);
+                        }
+                        else
+                        {
+                            this.SetSong(0);
+                        }
+                    }
+                    else
+                    {
+                        this.Play(0);
+                    }
+
                 }
                 else
                 {
@@ -222,13 +291,11 @@ namespace Laaud_UWP
         public void Pause()
         {
             this.player.Pause();
-            this.Playing = false;
         }
 
         public void Stop()
         {
             this.player.Stop();
-            this.Playing = false;
         }
 
         public void StopAndClear()
@@ -253,8 +320,24 @@ namespace Laaud_UWP
                 }
 
                 this.player.Play();
-                this.Playing = true;
             }
+        }
+
+        private void SetSong(int index)
+        {
+            this.CurrentSongIndex = index;
+        }
+
+        private void ToggleRepeat()
+        {
+            int currentModeIndex = repeatModes.IndexOf(this.RepeatMode);
+            int nextModeIndex = currentModeIndex + 1;
+            if (nextModeIndex >= repeatModes.Count)
+            {
+                nextModeIndex = 0;
+            }
+
+            this.RepeatMode = repeatModes[nextModeIndex];
         }
 
         private async void LoadCurrentSongToPlayer()

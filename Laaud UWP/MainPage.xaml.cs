@@ -32,13 +32,13 @@ namespace Laaud_UWP
     {
         private ObservableCollection<Song> searchedSongs = new ObservableCollection<Song>();
         private CancellationTokenSource loadingSongsCancellationTokenSource = null;
-        private readonly TracklistPlayer tracklistPlayer;
+        private readonly TracklistPlayer.TracklistPlayer tracklistPlayer;
 
         public MainPage()
         {
             this.InitializeComponent();
 
-            this.tracklistPlayer = new TracklistPlayer();
+            this.tracklistPlayer = new TracklistPlayer.TracklistPlayer(this.mediaElement);
             this.tracklistPlayer.SongChanged += this.TracklistPlayer_SongChanged;
 
             this.SearchResults.ItemsSource = this.searchedSongs;

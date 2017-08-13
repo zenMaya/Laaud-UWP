@@ -116,6 +116,7 @@
       <DependentUpon>TracklistPlayerControls.xaml</DependentUpon>
     </Compile>
     <Compile Include="TracklistPlayer\DelegateCommand.cs" />
+    <Compile Include="TracklistPlayer\RepeatMode.cs" />
     <Compile Include="TracklistPlayer\SongChangedEventArgs.cs" />
     <Compile Include="TracklistPlayer\TracklistPlayer.cs" />
     <Compile Include="Util\FileUtil.cs" />
