@@ -15,26 +15,24 @@ namespace Laaud_UWP
     class SongDBSearcher
     {
         private CancellationTokenSource loadingSongsCancellationTokenSource = null;
-        private List<int> DBIDs;
-        private GroupType _GroupType;
+        private List<int> dbIds = new List<int>();
+        private SearchResultsGroupType groupType;
 
-        public enum GroupType { song, album, artist };
-        public event Action<Song> SongRecievedFromDBEvent;
-        public event Action<Album> AlbumRecievedFromDBEvent;
-        public event Action<Artist> ArtistRecievedFromDBEvent;
-        
+        public event Action<Song> SongReceivedFromDBEvent;
+        public event Action<Album> AlbumReceivedFromDBEvent;
+        public event Action<Artist> ArtistReceivedFromDBEvent;
 
-        public void Search(GroupType _GroupType, string[] phrases = null)
+        public async Task SearchAsync(SearchResultsGroupType groupType, string[] phrases = null)
         {
             if (this.loadingSongsCancellationTokenSource != null)
             {
                 this.loadingSongsCancellationTokenSource.Cancel();
             }
 
-            Task.Factory.StartNew(() =>
+            await Task.Factory.StartNew(() =>
             {
-                this._GroupType = _GroupType;
-                this.DBIDs.Clear();
+                this.groupType = groupType;
+                this.dbIds.Clear();
 
                 this.loadingSongsCancellationTokenSource = new CancellationTokenSource();
 
@@ -43,13 +41,13 @@ namespace Laaud_UWP
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
 
-                    var phrase = phrases[0] == null ? phrases[0] : string.Empty;
+                    string phrase = phrases != null ? phrases[0] : string.Empty;
 
-                    switch (this._GroupType)
+                    switch (this.groupType)
                     {
-                        case GroupType.song:
+                        case SearchResultsGroupType.Song:
 
-                            DBIDs = dbContext.Songs
+                            this.dbIds = dbContext.Songs
                                 .Include(song => song.Album)
                                 .ThenInclude(album => album.Artist)
                                 .Where(
@@ -67,11 +65,9 @@ namespace Laaud_UWP
 
 
 
-                        case GroupType.album:
+                        case SearchResultsGroupType.Album:
 
-                            DBIDs = dbContext.Songs
-                                .Include(song => song.Album)
-                                .ThenInclude(album => album.Artist)
+                            this.dbIds = dbContext.Songs
                                 .Where(
                                     song => song.Title.ContainsIgnoreCase(phrase)
                                     || song.Album.Name.ContainsIgnoreCase(phrase)
@@ -86,8 +82,8 @@ namespace Laaud_UWP
 
                             break;
 
-                        default: //artist
-                            DBIDs = dbContext.Songs
+                        case SearchResultsGroupType.Artist:
+                            this.dbIds = dbContext.Songs
                                 .Include(song => song.Album)
                                 .ThenInclude(album => album.Artist)
                                 .Where(
@@ -104,41 +100,49 @@ namespace Laaud_UWP
                             Debug.WriteLine(stopwatch.ElapsedMilliseconds);
                             break;
                     }
-
-                    GetSearchResults(0, 30);
                 }
             });
         }
 
         public void GetSearchResults(int firstElement, int range)
         {
-            var maxVal = range + firstElement >= DBIDs.Count ? DBIDs.Count - 1 : range + firstElement; 
-            using (MusicLibraryContext dbContext = new MusicLibraryContext())
+            Task.Factory.StartNew(() =>
             {
-                switch (this._GroupType)
+                //int maxVal = range + firstElement >= this.dbIds.Count ? this.dbIds.Count - 1 : range + firstElement;
+                List<int> idsToFetch = this.dbIds.Skip(firstElement + 1).Take(range).ToList();
+                using (MusicLibraryContext dbContext = new MusicLibraryContext())
                 {
-                    case GroupType.song:
-                        for (int i = firstElement; i <= maxVal; i++)
-                        {
-                            this.SongRecievedFromDBEvent?.Invoke(dbContext.Songs.Find(DBIDs[i]));
-                        }
-                        break;
+                    switch (this.groupType)
+                    {
+                        case SearchResultsGroupType.Song:
+                            foreach (Song song in dbContext.Songs
+                                    .Where(song => idsToFetch.Contains(song.SongId)))
+                            {
+                                this.SongReceivedFromDBEvent?.Invoke(song);
+                            }
+                            break;
 
-                    case GroupType.album:
-                        for (int i = firstElement; i <= maxVal; i++)
-                        {
-                            this.AlbumRecievedFromDBEvent?.Invoke(dbContext.Albums.Find(DBIDs[i]));
-                        }
-                        break;
+                        case SearchResultsGroupType.Album:
+                            foreach (Album album in dbContext.Albums
+                                    .Include(album => album.Songs)
+                                    .Where(album => idsToFetch.Contains(album.AlbumId)))
+                            {
+                                this.AlbumReceivedFromDBEvent?.Invoke(album);
+                            }
+                            break;
 
-                    default:
-                        for (int i = firstElement; i <= maxVal; i++)
-                        {
-                            this.ArtistRecievedFromDBEvent?.Invoke(dbContext.Artists.Find(DBIDs[i]));
-                        }
-                        break;
+                        case SearchResultsGroupType.Artist:
+                            foreach (Artist artist in dbContext.Artists
+                                    .Include(artist => artist.Albums)
+                                    .Include("Albums.Songs")
+                                    .Where(artist => idsToFetch.Contains(artist.ArtistId)))
+                            {
+                                this.ArtistReceivedFromDBEvent?.Invoke(artist);
+                            }
+                            break;
+                    }
                 }
-            }
+            });
         }
     }
 }

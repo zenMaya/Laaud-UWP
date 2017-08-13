@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Laaud_UWP.SearchResult
+namespace Laaud_UWP.SearchResults
 {
     public class SearchResultEventArgs : EventArgs
     {

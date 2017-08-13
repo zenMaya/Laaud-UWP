@@ -1,5 +1,6 @@
 ﻿using Com.PhilChuang.Utils.MvvmNotificationChainer;
 using Laaud_UWP.Models;
+using Laaud_UWP.Util;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -375,14 +376,7 @@ namespace Laaud_UWP.TracklistPlayer
 
         private void ToggleRepeat()
         {
-            int currentModeIndex = repeatModes.IndexOf(this.RepeatMode);
-            int nextModeIndex = currentModeIndex + 1;
-            if (nextModeIndex >= repeatModes.Count)
-            {
-                nextModeIndex = 0;
-            }
-
-            this.RepeatMode = repeatModes[nextModeIndex];
+            this.RepeatMode = repeatModes.GetNextAfter(this.RepeatMode);
         }
 
         private async void LoadCurrentSongToPlayer()

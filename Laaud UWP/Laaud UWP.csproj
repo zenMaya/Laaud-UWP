@@ -96,6 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="SearchResultsGroupType.cs" />
     <Compile Include="LibraryLoader\LibraryLoadProgressUpdateArgs.cs" />
     <Compile Include="Migrations\20170812131139_AddPlaylists.cs" />
     <Compile Include="Migrations\20170812131139_AddPlaylists.designer.cs">
@@ -106,12 +107,12 @@
     <Compile Include="SearchResultSong.xaml.cs">
       <DependentUpon>SearchResultSong.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SearchResult\SearchResult.xaml.cs">
+    <Compile Include="SearchResults\SearchResult.xaml.cs">
       <DependentUpon>SearchResult.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SearchResult\SearchResultEventArgs.cs" />
-    <Compile Include="SearchResult\SearchResultSelectedChangedEventArgs.cs" />
-    <Compile Include="SearchResult\SearchResultFavoriteChangedEventArgs.cs" />
+    <Compile Include="SearchResults\SearchResultEventArgs.cs" />
+    <Compile Include="SearchResults\SearchResultSelectedChangedEventArgs.cs" />
+    <Compile Include="SearchResults\SearchResultFavoriteChangedEventArgs.cs" />
     <Compile Include="SearchSongs.cs" />
     <Compile Include="TracklistPlayerControls.xaml.cs">
       <DependentUpon>TracklistPlayerControls.xaml</DependentUpon>
@@ -121,6 +122,7 @@
     <Compile Include="TracklistPlayer\SongChangedEventArgs.cs" />
     <Compile Include="TracklistPlayer\TracklistPlayer.cs" />
     <Compile Include="Util\FileUtil.cs" />
+    <Compile Include="Util\ListExtensions.cs" />
     <Compile Include="Util\SongImageUtil.cs" />
     <Compile Include="Util\Logging\LaaudLogger.cs" />
     <Compile Include="Util\Logging\LaaudLoggerProvider.cs" />
@@ -279,7 +281,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SearchResult\SearchResult.xaml">
+    <Page Include="SearchResults\SearchResult.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

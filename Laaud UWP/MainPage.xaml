@@ -9,7 +9,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <MediaElement x:Name="mediaElement" Height="100" Width="100" AreTransportControlsEnabled="True" AudioCategory="BackgroundCapableMedia"/>
-        <TextBox x:Name="SearchTextBox" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="48" Background="#66FF00FF" PlaceholderText="Search" FontSize="24" TextChanged="SearchTextBox_TextChanged"/>
+        <TextBox x:Name="SearchTextBox" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="48" Background="#66FF00FF" PlaceholderText="Search" FontSize="24" TextChanged="SearchTextBox_TextChangedAsync"/>
 
         <Grid Margin="0,0,0,100">
             <Grid.ColumnDefinitions>
@@ -32,14 +32,8 @@
                     <ColumnDefinition Width="11*"/>
                     <ColumnDefinition Width="5*"/>
                 </Grid.ColumnDefinitions>
-                <ScrollViewer VerticalScrollBarVisibility="Hidden" Grid.RowSpan="2" Margin="42,0,0,0">
-                    <ListView x:Name="SearchResults" Background="Blue">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <local:SearchResultSong></local:SearchResultSong>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                <ScrollViewer x:Name="SearchResults" VerticalScrollBarVisibility="Hidden" Grid.RowSpan="2" Margin="42,0,0,0" Background="Blue">
+
                 </ScrollViewer>
                 <Grid x:Name="AddingSongsToLibraryContainer" VerticalAlignment="Bottom" Margin="52,0,10,10" Height="48" Visibility="Collapsed">
                     <TextBlock Margin="0,0,0,10" Text="Adding songs to library" FontSize="18" Foreground="White" HorizontalAlignment="Left" Width="225" />
@@ -59,7 +53,7 @@
                     </Button>
                     <Button x:Name="Folders" Height="42" HorizontalAlignment="Stretch" />
                     <Button x:Name="Playlists" Height="42" HorizontalAlignment="Stretch" />
-                    <Button x:Name="ChangeViewType" Height="42" HorizontalAlignment="Stretch" />
+                    <Button x:Name="ChangeViewType" Height="42" HorizontalAlignment="Stretch" Click="ChangeViewType_Click" Foreground="White" />
                     <Button x:Name="AddMusicToLibrary" Height="42" HorizontalAlignment="Stretch" Click="AddMusicToLibrary_ClickAsync">
                         <Image Source="Assets/AddMusicToLibrary.png" Margin="-11,-1"/>
                     </Button>

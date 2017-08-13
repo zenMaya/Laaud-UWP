@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 
-namespace Laaud_UWP.SearchResult
+namespace Laaud_UWP.SearchResults
 {
     public class SearchResultSelectedChangedEventArgs : SearchResultEventArgs
     {
