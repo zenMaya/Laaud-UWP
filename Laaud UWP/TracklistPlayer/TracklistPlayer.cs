@@ -228,12 +228,7 @@ namespace Laaud_UWP.TracklistPlayer
             {
                 if (this.player.Position.Seconds > 3 || this.CurrentSongIndex == 0)
                 {
-                    // TODO reset position to the beginning instead of playing previous song
-                    // remove the code below when implementing
-                    if (this.CurrentSongIndex != 0)
-                    {
-                        this.Play(this.CurrentSongIndex - 1);
-                    }
+                    this.player.Position = TimeSpan.Zero;
                 }
                 else if (this.CurrentSongIndex != 0)
                 {
