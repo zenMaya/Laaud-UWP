@@ -95,6 +95,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="LibraryLoader\LibraryLoadProgressUpdateArgs.cs" />
     <Compile Include="Migrations\20170812131139_AddPlaylists.cs" />
     <Compile Include="Migrations\20170812131139_AddPlaylists.designer.cs">
@@ -105,6 +106,12 @@
     <Compile Include="SearchResultSong.xaml.cs">
       <DependentUpon>SearchResultSong.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SearchResult\SearchResult.xaml.cs">
+      <DependentUpon>SearchResult.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SearchResult\SearchResultEventArgs.cs" />
+    <Compile Include="SearchResult\SearchResultSelectedChangedEventArgs.cs" />
+    <Compile Include="SearchResult\SearchResultFavoriteChangedEventArgs.cs" />
     <Compile Include="TracklistPlayerControls.xaml.cs">
       <DependentUpon>TracklistPlayerControls.xaml</DependentUpon>
     </Compile>
@@ -267,6 +274,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="SearchResultSong.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SearchResult\SearchResult.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

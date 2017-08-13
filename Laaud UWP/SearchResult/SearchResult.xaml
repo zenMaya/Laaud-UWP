@@ -1,0 +1,38 @@
+﻿<UserControl
+    x:Class="Laaud_UWP.SearchResult.SearchResult"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Laaud_UWP.SearchResult"
+    xmlns:converters="using:Laaud_UWP.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignWidth="400" DoubleTapped="UserControl_DoubleTapped">
+
+    <UserControl.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <StackPanel>
+        <Grid Height="50" Visibility="{Binding Path=ShowTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock x:Name="TitleTextBlock" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding Title}" VerticalAlignment="Center"/>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button x:Name="FavoriteButton" Height="30" Margin="0,0,10,0" VerticalAlignment="Center" Width="30" Click="FavoriteButton_Click" >
+                    <Image x:Name="FavoriteImage" Source="{Binding FavoriteImageSource}"/>
+                </Button>
+                <Button x:Name="ExpandButton" Height="30" Margin="0,0,10,0" VerticalAlignment="Center" Width="30" Visibility="{Binding Path=ShowExpanderButton, Converter={StaticResource BooleanToVisibilityConverter}}" Click="ExpandButton_Click">
+                    <Image x:Name="ExpandImage" Source="{Binding ExpanderImageSource}"/>
+                </Button>
+                
+            </StackPanel>
+        </Grid>
+
+        <ListView x:Name="ChildrenListView" IsItemClickEnabled="True" ItemClick="ChildrenListView_ItemClick" Visibility="{Binding Path=ShowExpanderList, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalContentAlignment="Stretch">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+    </StackPanel>
+</UserControl>
