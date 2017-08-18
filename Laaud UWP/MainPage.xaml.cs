@@ -26,6 +26,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Laaud_UWP.SearchResults;
+using Laaud_UWP.DBSearch;
 
 namespace Laaud_UWP
 {
@@ -35,12 +36,13 @@ namespace Laaud_UWP
 
         private readonly TracklistPlayer.TracklistPlayer tracklistPlayer;
         private readonly SongDBSearcher songDBSearcher;
+        private readonly AlbumDBSearcher albumDBSearcher;
+        private readonly ArtistDBSearcher artistDBSearcher;
 
         private SearchResultsGroupType currentGroupType;
         private SearchResults.SearchResult topSearchResult;
-        private Dictionary<int, Song> searchedSongsCache = new Dictionary<int, Song>();
-        private Dictionary<int, Album> searchedAlbumsCache = new Dictionary<int, Album>();
-        private Dictionary<int, Artist> searchedArtistsCache = new Dictionary<int, Artist>();
+
+        private bool addingStuff = false;
 
         public SearchResultsGroupType CurrentGroupType
         {
@@ -78,57 +80,44 @@ namespace Laaud_UWP
             this.tracklistPlayer.SongChanged += this.TracklistPlayer_SongChanged;
 
             this.songDBSearcher = new SongDBSearcher();
-            this.songDBSearcher.SongReceivedFromDBEvent += (song) => this.AddSongToSearchResults(song, this.topSearchResult);
-            this.songDBSearcher.AlbumReceivedFromDBEvent += (album) => this.AddAlbumToSearchResults(album, this.topSearchResult);
-            this.songDBSearcher.ArtistReceivedFromDBEvent += (artist) => this.AddArtistToSearchResults(artist, this.topSearchResult);
+            this.albumDBSearcher = new AlbumDBSearcher();
+            this.artistDBSearcher = new ArtistDBSearcher();
 
             this.TrackList.ItemsSource = this.tracklistPlayer.TrackList;
             this.TracklistPlayerControl.SetTracklistPlayer(this.tracklistPlayer);
         }
 
-        private async void AddArtistToSearchResults(Artist obj, SearchResult parentSearchResult)
+        private async Task AddArtistToSearchResultsAsync(Artist obj, SearchResult parentSearchResult)
         {
-            await this.Dispatcher.RunIdleAsync((args) =>
+            await this.Dispatcher.RunIdleAsync(async (args) =>
             {
-                if (!this.searchedArtistsCache.ContainsKey(obj.ArtistId))
-                {
-                    SearchResult artistSearchResult = parentSearchResult.AddChild(obj.ArtistId, obj.Name, false);
-                    this.searchedArtistsCache.Add(obj.ArtistId, obj);
+                SearchResult artistSearchResult = parentSearchResult.AddChild(obj.ArtistId, obj.Name, false);
 
-                    foreach (Album album in obj.Albums)
-                    {
-                        this.AddAlbumToSearchResults(album, artistSearchResult);
-                    }
+                foreach (Album album in obj.Albums)
+                {
+                    await this.AddAlbumToSearchResultsAsync(album, artistSearchResult);
                 }
             });
         }
 
-        private async void AddAlbumToSearchResults(Album obj, SearchResult parentSearchResult)
+        private async Task AddAlbumToSearchResultsAsync(Album obj, SearchResult parentSearchResult)
         {
-            await this.Dispatcher.RunIdleAsync((args) =>
+            await this.Dispatcher.RunIdleAsync(async (args) =>
             {
-                if (!this.searchedAlbumsCache.ContainsKey(obj.AlbumId))
-                {
-                    SearchResult albumSearchResult = parentSearchResult.AddChild(obj.AlbumId, obj.Name, false);
-                    this.searchedAlbumsCache.Add(obj.AlbumId, obj);
+                SearchResult albumSearchResult = parentSearchResult.AddChild(obj.AlbumId, obj.Name, false);
 
-                    foreach (Song song in obj.Songs)
-                    {
-                        this.AddSongToSearchResults(song, albumSearchResult);
-                    }
+                foreach (Song song in obj.Songs)
+                {
+                    await this.AddSongToSearchResultsAsync(song, albumSearchResult);
                 }
             });
         }
 
-        private async void AddSongToSearchResults(Song obj, SearchResult parentSearchResult)
+        private async Task AddSongToSearchResultsAsync(Song obj, SearchResult parentSearchResult)
         {
             await this.Dispatcher.RunIdleAsync((args) =>
             {
-                if (!this.searchedSongsCache.ContainsKey(obj.SongId))
-                {
-                    this.searchedSongsCache.Add(obj.SongId, obj);
-                    parentSearchResult.AddChild(obj.SongId, obj.Title, false);
-                }
+                parentSearchResult.AddChild(obj.SongId, obj.Title, false);
             });
         }
 
@@ -139,18 +128,63 @@ namespace Laaud_UWP
 
         private async void SearchTextBox_TextChangedAsync(object sender, TextChangedEventArgs e)
         {
-            string searchText = this.SearchTextBox.Text;
+            await LoadSongsListForSearchExpression(this.SearchTextBox.Text);
+        }
 
+        private async Task LoadSongsListForSearchExpression(string searchExpression)
+        {
             this.topSearchResult = new SearchResults.SearchResult();
             this.topSearchResult.DoubleClick += this.TopSearchResult_DoubleClick;
             this.SearchResults.Content = this.topSearchResult;
-            this.searchedSongsCache.Clear();
-            this.searchedAlbumsCache.Clear();
-            this.searchedArtistsCache.Clear();
 
-            await this.songDBSearcher.SearchAsync(this.CurrentGroupType, searchText.Split(' '));
+            await Task.Factory.StartNew(async () =>
+            {
+                switch (this.CurrentGroupType)
+                {
+                    case SearchResultsGroupType.Song:
+                        if (await this.songDBSearcher.LoadItemIdsAsync(searchExpression))
+                        {
+                            List<Song> songs = await this.songDBSearcher.LoadItemsAsync(50);
+                            this.addingStuff = true;
+                            foreach (Song song in songs)
+                            {
+                                await this.AddSongToSearchResultsAsync(song, this.topSearchResult);
+                            }
 
-            this.songDBSearcher.GetSearchResults(0, 50);
+                            this.addingStuff = false;
+                        }
+
+                        break;
+                    case SearchResultsGroupType.Album:
+                        if (await this.albumDBSearcher.LoadItemIdsAsync(searchExpression))
+                        {
+                            List<Album> albums = await this.albumDBSearcher.LoadItemsAsync(20);
+                            this.addingStuff = true;
+                            foreach (Album album in albums)
+                            {
+                                await this.AddAlbumToSearchResultsAsync(album, this.topSearchResult);
+                            }
+
+                            this.addingStuff = false;
+                        }
+
+                        break;
+                    case SearchResultsGroupType.Artist:
+                        if (await this.artistDBSearcher.LoadItemIdsAsync(searchExpression))
+                        {
+                            List<Artist> artists = await this.artistDBSearcher.LoadItemsAsync(20);
+                            this.addingStuff = true;
+                            foreach (Artist artist in artists)
+                            {
+                                await this.AddArtistToSearchResultsAsync(artist, this.topSearchResult);
+                            }
+
+                            this.addingStuff = false;
+                        }
+
+                        break;
+                }
+            });
         }
 
         private void TopSearchResult_DoubleClick(object sender, SearchResultEventArgs e)
@@ -162,7 +196,7 @@ namespace Laaud_UWP
                     case 0:
                         break;
                     case 1:
-                        this.tracklistPlayer.AddSong(this.searchedSongsCache[e.ChangedObject.Id]);
+                        this.tracklistPlayer.AddSong(this.songDBSearcher.GetByPrimaryKey(e.ChangedObject.Id));
                         break;
                 }
             }
@@ -173,13 +207,13 @@ namespace Laaud_UWP
                     case 0:
                         break;
                     case 1:
-                        foreach(Song song in this.searchedAlbumsCache[e.ChangedObject.Id].Songs)
+                        foreach (Song song in this.albumDBSearcher.GetByPrimaryKey(e.ChangedObject.Id).Songs)
                         {
                             this.tracklistPlayer.AddSong(song);
                         }
                         break;
                     case 2:
-                        this.tracklistPlayer.AddSong(this.searchedSongsCache[e.ChangedObject.Id]);
+                        this.tracklistPlayer.AddSong(this.songDBSearcher.GetByPrimaryKey(e.ChangedObject.Id));
                         break;
                 }
             }
@@ -190,7 +224,7 @@ namespace Laaud_UWP
                     case 0:
                         break;
                     case 1:
-                        foreach (Album album in this.searchedArtistsCache[e.ChangedObject.Id].Albums)
+                        foreach (Album album in this.artistDBSearcher.GetByPrimaryKey(e.ChangedObject.Id).Albums)
                         {
                             foreach (Song song in album.Songs)
                             {
@@ -200,13 +234,13 @@ namespace Laaud_UWP
                         }
                         break;
                     case 2:
-                        foreach (Song song in this.searchedAlbumsCache[e.ChangedObject.Id].Songs)
+                        foreach (Song song in this.albumDBSearcher.GetByPrimaryKey(e.ChangedObject.Id).Songs)
                         {
                             this.tracklistPlayer.AddSong(song);
                         }
                         break;
                     case 3:
-                        this.tracklistPlayer.AddSong(this.searchedSongsCache[e.ChangedObject.Id]);
+                        this.tracklistPlayer.AddSong(this.songDBSearcher.GetByPrimaryKey(e.ChangedObject.Id));
                         break;
                 }
             }
@@ -276,9 +310,59 @@ namespace Laaud_UWP
             }
         }
 
-        private void ChangeViewType_Click(object sender, RoutedEventArgs e)
+        private async void ChangeViewType_ClickAsync(object sender, RoutedEventArgs e)
         {
             this.CurrentGroupType = groupTypesOrder.GetNextAfter(this.CurrentGroupType);
+            await LoadSongsListForSearchExpression(this.SearchTextBox.Text);
+        }
+
+        private async void SearchResults_ViewChangingAsync(object sender, ScrollViewerViewChangingEventArgs e)
+        {
+            if (!this.addingStuff && this.SearchResults.ExtentHeight - e.NextView.VerticalOffset < 1000)
+            {
+                await Task.Factory.StartNew(async () =>
+                {
+                    switch (this.CurrentGroupType)
+                    {
+                        case SearchResultsGroupType.Song:
+                            List<Song> songs = await this.songDBSearcher.LoadItemsAsync(10);
+                            this.addingStuff = true;
+                            foreach (Song song in songs)
+                            {
+                                await this.AddSongToSearchResultsAsync(song, this.topSearchResult);
+                            }
+
+                            this.addingStuff = false;
+                            break;
+                        case SearchResultsGroupType.Album:
+                            List<Album> albums = await this.albumDBSearcher.LoadItemsAsync(10);
+                            this.addingStuff = true;
+                            foreach (Album album in albums)
+                            {
+                                await this.AddAlbumToSearchResultsAsync(album, this.topSearchResult);
+                            }
+
+                            this.addingStuff = false;
+                            break;
+                        case SearchResultsGroupType.Artist:
+                            List<Artist> artists = await this.artistDBSearcher.LoadItemsAsync(10);
+                            this.addingStuff = true;
+                            foreach (Artist artist in artists)
+                            {
+                                await this.AddArtistToSearchResultsAsync(artist, this.topSearchResult);
+                            }
+
+                            this.addingStuff = false;
+                            break;
+                    }
+
+                });
+            }
+        }
+
+        private async void Page_LoadedAsync(object sender, RoutedEventArgs e)
+        {
+            await LoadSongsListForSearchExpression(this.SearchTextBox.Text);
         }
     }
 }

@@ -5,7 +5,7 @@
     xmlns:local="using:Laaud_UWP"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Loaded="Page_LoadedAsync">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <MediaElement x:Name="mediaElement" Height="100" Width="100" AreTransportControlsEnabled="True" AudioCategory="BackgroundCapableMedia"/>
@@ -32,7 +32,7 @@
                     <ColumnDefinition Width="11*"/>
                     <ColumnDefinition Width="5*"/>
                 </Grid.ColumnDefinitions>
-                <ScrollViewer x:Name="SearchResults" VerticalScrollBarVisibility="Hidden" Grid.RowSpan="2" Margin="42,0,0,0" Background="Blue">
+                <ScrollViewer x:Name="SearchResults" VerticalScrollBarVisibility="Hidden" Grid.RowSpan="2" Margin="42,0,0,0" Background="Blue" ViewChanging="SearchResults_ViewChangingAsync">
 
                 </ScrollViewer>
                 <Grid x:Name="AddingSongsToLibraryContainer" VerticalAlignment="Bottom" Margin="52,0,10,10" Height="48" Visibility="Collapsed">
@@ -53,7 +53,7 @@
                     </Button>
                     <Button x:Name="Folders" Height="42" HorizontalAlignment="Stretch" />
                     <Button x:Name="Playlists" Height="42" HorizontalAlignment="Stretch" />
-                    <Button x:Name="ChangeViewType" Height="42" HorizontalAlignment="Stretch" Click="ChangeViewType_Click" Foreground="White" />
+                    <Button x:Name="ChangeViewType" Height="42" HorizontalAlignment="Stretch" Click="ChangeViewType_ClickAsync" Foreground="White" />
                     <Button x:Name="AddMusicToLibrary" Height="42" HorizontalAlignment="Stretch" Click="AddMusicToLibrary_ClickAsync">
                         <Image Source="Assets/AddMusicToLibrary.png" Margin="-11,-1"/>
                     </Button>

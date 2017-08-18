@@ -12,7 +12,7 @@ using Laaud_UWP.Util;
 
 namespace Laaud_UWP
 {
-    class SongDBSearcher
+    class SongDBSearcherShit
     {
         private CancellationTokenSource loadingSongsCancellationTokenSource = null;
         private List<int> dbIds = new List<int>();

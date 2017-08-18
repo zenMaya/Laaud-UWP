@@ -96,6 +96,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="DBSearch\AlbumDBSearcher.cs" />
+    <Compile Include="DBSearch\ArtistDBSearcher.cs" />
+    <Compile Include="DBSearch\DBSearcher.cs" />
+    <Compile Include="DBSearch\SongDBSearcher.cs" />
     <Compile Include="SearchResultsGroupType.cs" />
     <Compile Include="LibraryLoader\LibraryLoadProgressUpdateArgs.cs" />
     <Compile Include="Migrations\20170812131139_AddPlaylists.cs" />
@@ -113,7 +117,7 @@
     <Compile Include="SearchResults\SearchResultEventArgs.cs" />
     <Compile Include="SearchResults\SearchResultSelectedChangedEventArgs.cs" />
     <Compile Include="SearchResults\SearchResultFavoriteChangedEventArgs.cs" />
-    <Compile Include="SearchSongs.cs" />
+    <Compile Include="SongDBSearcherShit.cs" />
     <Compile Include="TracklistPlayerControls.xaml.cs">
       <DependentUpon>TracklistPlayerControls.xaml</DependentUpon>
     </Compile>
