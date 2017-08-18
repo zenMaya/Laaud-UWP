@@ -11,13 +11,6 @@ namespace Laaud_UWP.DBSearch
 {
     class ArtistDBSearcher : DBSearcher<Artist, string>
     {
-        private readonly AlbumDBSearcher albumDBSearcher;
-
-        public ArtistDBSearcher()
-        {
-            this.albumDBSearcher = null;
-        }
-
         protected override List<Artist> GetByPrimaryKeys(List<int> primaryKeyCollection)
         {
             using (MusicLibraryContext dbContext = new MusicLibraryContext())
