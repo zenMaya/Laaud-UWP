@@ -29,21 +29,12 @@
 
             <Grid Margin="0,48,0,0" Grid.Column="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="11*"/>
-                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="42"/>
+                    <ColumnDefinition Width="321*"/>
+                    <ColumnDefinition Width="205*"/>
                 </Grid.ColumnDefinitions>
-                <ScrollViewer x:Name="SearchResults" VerticalScrollBarVisibility="Hidden" Grid.RowSpan="2" Margin="42,0,0,0" Background="Blue" ViewChanging="SearchResults_ViewChangingAsync">
 
-                </ScrollViewer>
-                <Grid x:Name="AddingSongsToLibraryContainer" VerticalAlignment="Bottom" Margin="52,0,10,10" Height="48" Visibility="Collapsed">
-                    <TextBlock Margin="0,0,0,10" Text="Adding songs to library" FontSize="18" Foreground="White" HorizontalAlignment="Left" Width="225" />
-                    <TextBlock x:Name="AddingSongsToLibraryCurrentSong" Margin="225,0,0,14" FontSize="18" Foreground="White" TextAlignment="Right" RenderTransformOrigin="0.5,0.5" />
-                    <ProgressBar x:Name="AddingSongsToLibraryProgressBar" Margin="0,39,0,5" Foreground="White" Maximum="1" SmallChange="0.001" LargeChange="0.01" />
-                </Grid>
-                <ScrollViewer Grid.Column="1" Grid.RowSpan="2" VerticalScrollBarVisibility="Hidden">
-                    <Grid Background="Green" CanDrag="True"></Grid>
-                </ScrollViewer>
-                <StackPanel HorizontalAlignment="Left" Width="42" Background="#FF00F3FF" Grid.RowSpan="2">
+                <StackPanel Grid.Column="0" HorizontalAlignment="Left" Width="42" Background="#FF00F3FF">
                     <Button x:Name="Settings" Height="42" HorizontalAlignment="Stretch" >
                         <Image Source="Assets/Settings.png" Margin="-11,-1"/>
                     </Button>
@@ -59,6 +50,19 @@
                     </Button>
                     <Button x:Name="About" Height="42" HorizontalAlignment="Stretch"/>
                 </StackPanel>
+
+                <Grid Background="Blue" Grid.Column="1">
+                    <ScrollViewer x:Name="SearchResults" VerticalScrollBarVisibility="Hidden" ViewChanging="SearchResults_ViewChangingAsync"/>
+                    <Grid x:Name="AddingSongsToLibraryContainer" VerticalAlignment="Bottom" Margin="10,0,10,10" Height="48" Visibility="Collapsed">
+                        <TextBlock Margin="0,0,0,10" Text="Adding songs to library" FontSize="18" Foreground="White" HorizontalAlignment="Left" Width="225" />
+                        <TextBlock x:Name="AddingSongsToLibraryCurrentSong" Margin="225,0,0,14" FontSize="18" Foreground="White" TextAlignment="Right" RenderTransformOrigin="0.5,0.5" />
+                        <ProgressBar x:Name="AddingSongsToLibraryProgressBar" Margin="0,39,0,5" Foreground="White" Maximum="1" SmallChange="0.001" LargeChange="0.01" />
+                    </Grid>
+                </Grid>
+
+                <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Hidden">
+                    <Grid Background="Green" CanDrag="True"></Grid>
+                </ScrollViewer>
             </Grid>
         </Grid>
         <local:TracklistPlayerControls x:Name="TracklistPlayerControl" Background="Red" Height="100" VerticalAlignment="Bottom"/>
