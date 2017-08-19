@@ -95,7 +95,7 @@ namespace Laaud_UWP.SearchResults.Models
                 return await SongImageUtil.LoadImageAsync(firstSong.SongId);
             }
 
-            return ImageUtil.GetAssetsImageByFileName("Favor.png");
+            return ImageUtil.GetAssetsBitmapImageByFileName("Favor.png");
         }
 
         private bool LoadFavorite()

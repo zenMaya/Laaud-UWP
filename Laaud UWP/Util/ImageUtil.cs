@@ -9,9 +9,14 @@ namespace Laaud_UWP.Util
 {
     class ImageUtil
     {
-        public static BitmapImage GetAssetsImageByFileName(string fileName)
+        public static Uri GetAssetsImageUriByFileName(string fileName)
         {
-            return new BitmapImage(new Uri("ms-appx:///Assets/" + fileName, UriKind.Absolute));
+            return new Uri("ms-appx:///Assets/" + fileName, UriKind.Absolute);
+        }
+
+        public static BitmapImage GetAssetsBitmapImageByFileName(string fileName)
+        {
+            return new BitmapImage(GetAssetsImageUriByFileName(fileName));
         }
     }
 }

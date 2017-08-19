@@ -19,13 +19,18 @@ namespace Laaud_UWP.Util
             await FileIO.WriteBytesAsync(imageFile, imageData);
         }
 
-        public static async Task<BitmapImage> LoadImageAsync(int songId)
+        public static async Task<StorageFile> LoadStorageFileAsync(int songId)
         {
             StorageFolder imagesFolder = await GetImagesFolderAsync();
-            StorageFile file = (StorageFile)await imagesFolder.TryGetItemAsync(songId.ToString());
-            if(file == null)
+            return (StorageFile)await imagesFolder.TryGetItemAsync(songId.ToString());
+        }
+
+        public static async Task<BitmapImage> LoadImageAsync(int songId)
+        {
+            StorageFile file = await LoadStorageFileAsync(songId);
+            if (file == null)
             {
-                return ImageUtil.GetAssetsImageByFileName("Favor.png");
+                return ImageUtil.GetAssetsBitmapImageByFileName("Favor.png");
             }
             else
             {

@@ -162,11 +162,11 @@ namespace Laaud_UWP.SearchResults
 
                 if (this.Favorite)
                 {
-                    return ImageUtil.GetAssetsImageByFileName("Favorites.png");
+                    return ImageUtil.GetAssetsBitmapImageByFileName("Favorites.png");
                 }
                 else
                 {
-                    return ImageUtil.GetAssetsImageByFileName("Settings.png");
+                    return ImageUtil.GetAssetsBitmapImageByFileName("Settings.png");
                 }
             }
         }
@@ -182,11 +182,11 @@ namespace Laaud_UWP.SearchResults
 
                 if (this.ExpanderToggleState)
                 {
-                    return ImageUtil.GetAssetsImageByFileName("Where.png");
+                    return ImageUtil.GetAssetsBitmapImageByFileName("Where.png");
                 }
                 else
                 {
-                    return ImageUtil.GetAssetsImageByFileName("Beavers.png");
+                    return ImageUtil.GetAssetsBitmapImageByFileName("Beavers.png");
                 }
             }
         }

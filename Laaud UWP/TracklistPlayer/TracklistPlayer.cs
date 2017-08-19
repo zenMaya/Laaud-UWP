@@ -173,6 +173,8 @@ namespace Laaud_UWP.TracklistPlayer
             this.notificationChainManager.Observe(this);
             this.notificationChainManager.AddDefaultCall((sender, notifyingProperty, dependentProperty) => RaisePropertyChanged(dependentProperty));
 
+            this.SongChanged += this.TracklistPlayer_SongChanged;
+
             this.player = mediaElement;
             this.player.CurrentStateChanged += this.Player_CurrentStateChanged;
             this.player.MediaEnded += this.Player_MediaEnded;
@@ -189,6 +191,31 @@ namespace Laaud_UWP.TracklistPlayer
             this.NextCommand = new DelegateCommand(() => this.NextSong(false));
             this.PreviousCommand = new DelegateCommand(this.PreviousSong);
             this.RepeatCommand = new DelegateCommand(this.ToggleRepeat);
+        }
+
+        private async void TracklistPlayer_SongChanged(object sender, SongChangedEventArgs e)
+        {
+            SystemMediaTransportControlsDisplayUpdater updater = this.systemMediaControls.DisplayUpdater;
+
+            StorageFile file = await SongImageUtil.LoadStorageFileAsync(e.NewSong.SongId);
+            if (file == null)
+            {
+                updater.Thumbnail = RandomAccessStreamReference.CreateFromUri(ImageUtil.GetAssetsImageUriByFileName("Favor.png"));
+            }
+            else
+            {
+                updater.Thumbnail = RandomAccessStreamReference.CreateFromFile(file);
+            }
+
+            Song currentSong = this.CurrentSong;
+            updater.Type = MediaPlaybackType.Music;
+            updater.MusicProperties.Title = currentSong.Title;
+            updater.MusicProperties.TrackNumber = (uint)currentSong.Track;
+            updater.MusicProperties.AlbumTitle = currentSong.Album.Name;
+            updater.MusicProperties.AlbumArtist = currentSong.Album.Artist.Name;
+            updater.MusicProperties.Artist = currentSong.Album.Artist.Name;
+
+            updater.Update();
         }
 
         private async void SystemMediaControls_ButtonPressedAsync(SystemMediaTransportControls sender, SystemMediaTransportControlsButtonPressedEventArgs args)
