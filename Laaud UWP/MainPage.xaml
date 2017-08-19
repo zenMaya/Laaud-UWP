@@ -30,7 +30,7 @@
             <Grid Margin="0,48,0,0" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="42"/>
-                    <ColumnDefinition Width="321*"/>
+                    <ColumnDefinition Width="300*" MaxWidth="600" MinWidth="400"/>
                     <ColumnDefinition Width="205*"/>
                 </Grid.ColumnDefinitions>
 
@@ -50,7 +50,6 @@
                     </Button>
                     <Button x:Name="About" Height="42" HorizontalAlignment="Stretch"/>
                 </StackPanel>
-
                 <Grid Background="Blue" Grid.Column="1">
                     <ScrollViewer x:Name="SearchResults" VerticalScrollBarVisibility="Hidden" ViewChanging="SearchResults_ViewChangingAsync"/>
                     <Grid x:Name="AddingSongsToLibraryContainer" VerticalAlignment="Bottom" Margin="10,0,10,10" Height="48" Visibility="Collapsed">
