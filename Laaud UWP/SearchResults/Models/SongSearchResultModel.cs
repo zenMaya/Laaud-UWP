@@ -1,9 +1,13 @@
 ﻿using Laaud_UWP.Models;
+using Laaud_UWP.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Laaud_UWP.SearchResults.Models
 {
@@ -54,9 +58,22 @@ namespace Laaud_UWP.SearchResults.Models
             }
         }
 
+        public bool HasImage
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public IEnumerable<ISearchResultModel> CreateChildren()
         {
             throw new InvalidOperationException();
+        }
+
+        public async Task<ImageSource> LoadImageAsync()
+        {
+            return await SongImageUtil.LoadImageAsync(this.data.SongId);
         }
 
         private void SaveChanges()

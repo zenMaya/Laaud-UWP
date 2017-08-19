@@ -38,13 +38,7 @@ namespace Laaud_UWP
         {
             if (song != null)
             {
-                BitmapImage image = new BitmapImage();
-                StorageFile imageFile = await SongImageUtil.LoadImageAsync(song.SongId);
-                if (imageFile != null)
-                {
-                    await image.SetSourceAsync(await imageFile.OpenReadAsync());
-                    this.SongImage.Source = image;
-                }
+                this.SongImage.Source = await SongImageUtil.LoadImageAsync(song.SongId);
             }
         }
     }

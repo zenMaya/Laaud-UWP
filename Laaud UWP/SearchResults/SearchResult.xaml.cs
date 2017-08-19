@@ -1,5 +1,6 @@
 ﻿using Com.PhilChuang.Utils.MvvmNotificationChainer;
 using Laaud_UWP.SearchResults.Models;
+using Laaud_UWP.Util;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -140,6 +141,16 @@ namespace Laaud_UWP.SearchResults
             }
         }
 
+        public bool ShowImage
+        {
+            get
+            {
+                return this.model != null
+                    ? this.model.HasImage
+                    : false;
+            }
+        }
+
         public BitmapImage FavoriteImageSource
         {
             get
@@ -151,11 +162,11 @@ namespace Laaud_UWP.SearchResults
 
                 if (this.Favorite)
                 {
-                    return new BitmapImage(new Uri("ms-appx:///Assets/Favorites.png", UriKind.Absolute));
+                    return ImageUtil.GetAssetsImageByFileName("Favorites.png");
                 }
                 else
                 {
-                    return new BitmapImage(new Uri("ms-appx:///Assets/AddMusicToLibrary.png", UriKind.Absolute));
+                    return ImageUtil.GetAssetsImageByFileName("Settings.png");
                 }
             }
         }
@@ -171,11 +182,11 @@ namespace Laaud_UWP.SearchResults
 
                 if (this.ExpanderToggleState)
                 {
-                    return new BitmapImage(new Uri("ms-appx:///Assets/Settings.png", UriKind.Absolute));
+                    return ImageUtil.GetAssetsImageByFileName("Where.png");
                 }
                 else
                 {
-                    return new BitmapImage(new Uri("ms-appx:///Assets/Laaud Logo.png", UriKind.Absolute));
+                    return ImageUtil.GetAssetsImageByFileName("Beavers.png");
                 }
             }
         }
@@ -297,6 +308,14 @@ namespace Laaud_UWP.SearchResults
         private void RaisePropertyChanged(string propertyName)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private async void UserControl_LoadedAsync(object sender, RoutedEventArgs e)
+        {
+            if (this.ShowImage)
+            {
+                this.ImageImage.Source = await this.model.LoadImageAsync();
+            }
         }
     }
 }

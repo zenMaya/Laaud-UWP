@@ -7,21 +7,25 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignWidth="400" DoubleTapped="UserControl_DoubleTapped">
+    d:DesignWidth="400" DoubleTapped="UserControl_DoubleTapped" Loaded="UserControl_LoadedAsync">
 
     <UserControl.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
     <StackPanel>
-        <Grid Height="50" Visibility="{Binding Path=ShowTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock x:Name="TitleTextBlock" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding Title}" VerticalAlignment="Center"/>
+        <Grid Height="60" Visibility="{Binding Path=ShowTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                <Image x:Name="ImageImage" NineGrid="0,0,0,0" Margin="10,0,0,0" Width="45" Height="45" Visibility="{Binding Path=ShowImage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <TextBlock x:Name="TitleTextBlock" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding Title}" VerticalAlignment="Center" FontSize="16" Foreground="White"/>
+            </StackPanel>
+            
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button x:Name="FavoriteButton" Height="30" Margin="0,0,10,0" VerticalAlignment="Center" Width="30" Click="FavoriteButton_Click" >
-                    <Image x:Name="FavoriteImage" Source="{Binding FavoriteImageSource}"/>
+                <Button x:Name="FavoriteButton" Height="35" Margin="0,0,10,0" VerticalAlignment="Center" Width="35" Click="FavoriteButton_Click" Padding="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" >
+                    <Image x:Name="FavoriteImage" Source="{Binding FavoriteImageSource}" Stretch="Uniform"/>
                 </Button>
-                <Button x:Name="ExpandButton" Height="30" Margin="0,0,10,0" VerticalAlignment="Center" Width="30" Visibility="{Binding Path=ShowExpanderButton, Converter={StaticResource BooleanToVisibilityConverter}}" Click="ExpandButton_Click">
-                    <Image x:Name="ExpandImage" Source="{Binding ExpanderImageSource}"/>
+                <Button x:Name="ExpandButton" Height="35" Margin="0,0,10,0" VerticalAlignment="Center" Width="35" Padding="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Visibility="{Binding Path=ShowExpanderButton, Converter={StaticResource BooleanToVisibilityConverter}}" Click="ExpandButton_Click">
+                    <Image x:Name="ExpandImage" Source="{Binding ExpanderImageSource}" Stretch="Uniform"/>
                 </Button>
                 
             </StackPanel>

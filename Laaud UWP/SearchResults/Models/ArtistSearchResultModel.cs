@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Media;
 
 namespace Laaud_UWP.SearchResults.Models
 {
@@ -56,6 +57,19 @@ namespace Laaud_UWP.SearchResults.Models
             {
                 return true;
             }
+        }
+
+        public bool HasImage
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public Task<ImageSource> LoadImageAsync()
+        {
+            throw new InvalidOperationException();
         }
 
         public IEnumerable<ISearchResultModel> CreateChildren()

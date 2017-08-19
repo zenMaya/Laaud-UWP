@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Laaud_UWP.Util
 {
@@ -18,10 +19,20 @@ namespace Laaud_UWP.Util
             await FileIO.WriteBytesAsync(imageFile, imageData);
         }
 
-        public static async Task<StorageFile> LoadImageAsync(int songId)
+        public static async Task<BitmapImage> LoadImageAsync(int songId)
         {
             StorageFolder imagesFolder = await GetImagesFolderAsync();
-            return (StorageFile)await imagesFolder.TryGetItemAsync(songId.ToString());
+            StorageFile file = (StorageFile)await imagesFolder.TryGetItemAsync(songId.ToString());
+            if(file == null)
+            {
+                return ImageUtil.GetAssetsImageByFileName("Favor.png");
+            }
+            else
+            {
+                BitmapImage image = new BitmapImage();
+                await image.SetSourceAsync(await file.OpenAsync(FileAccessMode.Read));
+                return image;
+            }
         }
 
         private static async Task<StorageFolder> GetImagesFolderAsync()

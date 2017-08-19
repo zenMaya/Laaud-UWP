@@ -108,9 +108,6 @@
     <Compile Include="LibraryLoader\LibraryLoadProgressUpdateArgs.cs" />
     <Compile Include="Models\Playlist.cs" />
     <Compile Include="Models\PlaylistItem.cs" />
-    <Compile Include="SearchResultSong.xaml.cs">
-      <DependentUpon>SearchResultSong.xaml</DependentUpon>
-    </Compile>
     <Compile Include="SearchResults\Models\AlbumSearchResultModel.cs" />
     <Compile Include="SearchResults\Models\ArtistSearchResultModel.cs" />
     <Compile Include="SearchResults\Models\ISearchResultModel.cs" />
@@ -130,6 +127,7 @@
     <Compile Include="TracklistPlayer\SongChangedEventArgs.cs" />
     <Compile Include="TracklistPlayer\TracklistPlayer.cs" />
     <Compile Include="Util\FileUtil.cs" />
+    <Compile Include="Util\ImageUtil.cs" />
     <Compile Include="Util\ListExtensions.cs" />
     <Compile Include="Util\SongImageUtil.cs" />
     <Compile Include="Util\Logging\LaaudLogger.cs" />
@@ -192,6 +190,8 @@
     <Content Include="Assets\AppList\AppList.targetsize-80_altform-unplated.png" />
     <Content Include="Assets\AppList\AppList.targetsize-96.png" />
     <Content Include="Assets\AppList\AppList.targetsize-96_altform-unplated.png" />
+    <Content Include="Assets\Beavers.png" />
+    <Content Include="Assets\Favor.png" />
     <Content Include="Assets\Favorites.png" />
     <Content Include="Assets\AddMusicToLibrary.png" />
     <Content Include="Assets\Laaud Logo.svg" />
@@ -252,6 +252,8 @@
     <Content Include="Assets\Store\StoreLogo.scale-150.png" />
     <Content Include="Assets\Store\StoreLogo.scale-200.png" />
     <Content Include="Assets\Store\StoreLogo.scale-400.png" />
+    <Content Include="Assets\Taco.png" />
+    <Content Include="Assets\Where.png" />
     <Content Include="Assets\Wide310x150Logo.scale-100.png" />
     <Content Include="Assets\Wide310x150Logo.scale-125.png" />
     <Content Include="Assets\Wide310x150Logo.scale-150.png" />
@@ -280,10 +282,6 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="SearchResultSong.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SearchResults\SearchResult.xaml">
       <SubType>Designer</SubType>
