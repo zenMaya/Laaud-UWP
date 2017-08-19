@@ -53,7 +53,7 @@ namespace Laaud_UWP.Migrations
 
                     b.HasKey("PlaylistId");
 
-                    b.ToTable("Playlists");
+                    b.ToTable("Playlist");
                 });
 
             modelBuilder.Entity("Laaud_UWP.Models.PlaylistItem", b =>
@@ -73,7 +73,7 @@ namespace Laaud_UWP.Migrations
 
                     b.HasIndex("SongId");
 
-                    b.ToTable("PlaylistItems");
+                    b.ToTable("PlaylistItem");
                 });
 
             modelBuilder.Entity("Laaud_UWP.Models.Song", b =>
@@ -85,9 +85,13 @@ namespace Laaud_UWP.Migrations
 
                     b.Property<string>("Comment");
 
+                    b.Property<bool>("Favorite");
+
                     b.Property<string>("Genre");
 
                     b.Property<string>("Path");
+
+                    b.Property<int?>("PlaylistId");
 
                     b.Property<string>("Title");
 
@@ -98,6 +102,8 @@ namespace Laaud_UWP.Migrations
                     b.HasKey("SongId");
 
                     b.HasIndex("AlbumId");
+
+                    b.HasIndex("PlaylistId");
 
                     b.ToTable("Songs");
                 });
@@ -129,6 +135,10 @@ namespace Laaud_UWP.Migrations
                         .WithMany("Songs")
                         .HasForeignKey("AlbumId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Laaud_UWP.Models.Playlist")
+                        .WithMany("Songs")
+                        .HasForeignKey("PlaylistId");
                 });
         }
     }

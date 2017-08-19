@@ -13,6 +13,10 @@ namespace Laaud_UWP.Models
 
         public Artist Artist { get; set; }
         public int ArtistId { get; set; }
-        public List<Song> Songs { get; set; }
+        public List<Song> Songs
+        {
+            get;
+            set;
+        }
     }
 }

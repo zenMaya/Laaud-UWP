@@ -27,6 +27,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Laaud_UWP.SearchResults;
 using Laaud_UWP.DBSearch;
+using Laaud_UWP.SearchResults.Models;
 
 namespace Laaud_UWP
 {
@@ -89,35 +90,28 @@ namespace Laaud_UWP
 
         private async Task AddArtistToSearchResultsAsync(Artist obj, SearchResult parentSearchResult)
         {
-            await this.Dispatcher.RunIdleAsync(async (args) =>
+            ISearchResultModel searchResultModel = new ArtistSearchResultModel(obj);
+            await this.Dispatcher.RunIdleAsync((args) =>
             {
-                SearchResult artistSearchResult = parentSearchResult.AddChild(obj.ArtistId, obj.Name, false);
-
-                foreach (Album album in obj.Albums)
-                {
-                    await this.AddAlbumToSearchResultsAsync(album, artistSearchResult);
-                }
+                parentSearchResult.AddChild(searchResultModel);
             });
         }
 
         private async Task AddAlbumToSearchResultsAsync(Album obj, SearchResult parentSearchResult)
         {
-            await this.Dispatcher.RunIdleAsync(async (args) =>
+            ISearchResultModel searchResultModel = new AlbumSearchResultModel(obj);
+            await this.Dispatcher.RunIdleAsync((args) =>
             {
-                SearchResult albumSearchResult = parentSearchResult.AddChild(obj.AlbumId, obj.Name, false);
-
-                foreach (Song song in obj.Songs)
-                {
-                    await this.AddSongToSearchResultsAsync(song, albumSearchResult);
-                }
+                parentSearchResult.AddChild(searchResultModel);
             });
         }
 
         private async Task AddSongToSearchResultsAsync(Song obj, SearchResult parentSearchResult)
         {
+            ISearchResultModel searchResultModel = new SongSearchResultModel(obj);
             await this.Dispatcher.RunIdleAsync((args) =>
             {
-                parentSearchResult.AddChild(obj.SongId, obj.Title, false);
+                parentSearchResult.AddChild(searchResultModel);
             });
         }
 
@@ -158,7 +152,7 @@ namespace Laaud_UWP
                     case SearchResultsGroupType.Album:
                         if (await this.albumDBSearcher.LoadItemIdsAsync(searchExpression))
                         {
-                            List<Album> albums = await this.albumDBSearcher.LoadItemsAsync(20);
+                            List<Album> albums = await this.albumDBSearcher.LoadItemsAsync(50);
                             this.addingStuff = true;
                             foreach (Album album in albums)
                             {
@@ -172,7 +166,7 @@ namespace Laaud_UWP
                     case SearchResultsGroupType.Artist:
                         if (await this.artistDBSearcher.LoadItemIdsAsync(searchExpression))
                         {
-                            List<Artist> artists = await this.artistDBSearcher.LoadItemsAsync(20);
+                            List<Artist> artists = await this.artistDBSearcher.LoadItemsAsync(50);
                             this.addingStuff = true;
                             foreach (Artist artist in artists)
                             {

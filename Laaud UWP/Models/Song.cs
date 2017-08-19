@@ -19,6 +19,7 @@ namespace Laaud_UWP.Models
         public string Title { get; set; }
         public string Genre { get; set; }
         public string Comment { get; set; }
+        public bool Favorite { get; set; }
 
         [NotMapped]
         public StorageFile File { get; set; }

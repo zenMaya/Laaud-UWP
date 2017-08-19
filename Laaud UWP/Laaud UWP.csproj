@@ -100,17 +100,21 @@
     <Compile Include="DBSearch\ArtistDBSearcher.cs" />
     <Compile Include="DBSearch\DBSearcher.cs" />
     <Compile Include="DBSearch\SongDBSearcher.cs" />
+    <Compile Include="Migrations\20170818225837_AddEverything.cs" />
+    <Compile Include="Migrations\20170818225837_AddEverything.designer.cs">
+      <DependentUpon>20170818225837_AddEverything.cs</DependentUpon>
+    </Compile>
     <Compile Include="SearchResultsGroupType.cs" />
     <Compile Include="LibraryLoader\LibraryLoadProgressUpdateArgs.cs" />
-    <Compile Include="Migrations\20170812131139_AddPlaylists.cs" />
-    <Compile Include="Migrations\20170812131139_AddPlaylists.designer.cs">
-      <DependentUpon>20170812131139_AddPlaylists.cs</DependentUpon>
-    </Compile>
     <Compile Include="Models\Playlist.cs" />
     <Compile Include="Models\PlaylistItem.cs" />
     <Compile Include="SearchResultSong.xaml.cs">
       <DependentUpon>SearchResultSong.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SearchResults\Models\AlbumSearchResultModel.cs" />
+    <Compile Include="SearchResults\Models\ArtistSearchResultModel.cs" />
+    <Compile Include="SearchResults\Models\ISearchResultModel.cs" />
+    <Compile Include="SearchResults\Models\SongSearchResultModel.cs" />
     <Compile Include="SearchResults\SearchResult.xaml.cs">
       <DependentUpon>SearchResult.xaml</DependentUpon>
     </Compile>
@@ -132,10 +136,6 @@
     <Compile Include="Util\Logging\LaaudLoggerProvider.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20170627155936_SongAlbumArtist.cs" />
-    <Compile Include="Migrations\20170627155936_SongAlbumArtist.designer.cs">
-      <DependentUpon>20170627155936_SongAlbumArtist.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MusicLibraryContextModelSnapshot.cs" />
     <Compile Include="Models\Album.cs" />

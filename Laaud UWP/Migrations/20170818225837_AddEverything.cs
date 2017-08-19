@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Laaud_UWP.Migrations
 {
-    public partial class SongAlbumArtist : Migration
+    public partial class AddEverything : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -19,6 +19,19 @@ namespace Laaud_UWP.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Artists", x => x.ArtistId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Playlist",
+                columns: table => new
+                {
+                    PlaylistId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Playlist", x => x.PlaylistId);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,8 +62,10 @@ namespace Laaud_UWP.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     AlbumId = table.Column<int>(nullable: false),
                     Comment = table.Column<string>(nullable: true),
+                    Favorite = table.Column<bool>(nullable: false),
                     Genre = table.Column<string>(nullable: true),
                     Path = table.Column<string>(nullable: true),
+                    PlaylistId = table.Column<int>(nullable: true),
                     Title = table.Column<string>(nullable: true),
                     Track = table.Column<int>(nullable: false),
                     Year = table.Column<int>(nullable: false)
@@ -64,6 +79,39 @@ namespace Laaud_UWP.Migrations
                         principalTable: "Albums",
                         principalColumn: "AlbumId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Songs_Playlist_PlaylistId",
+                        column: x => x.PlaylistId,
+                        principalTable: "Playlist",
+                        principalColumn: "PlaylistId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlaylistItem",
+                columns: table => new
+                {
+                    PlaylistItemId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    OrderInList = table.Column<int>(nullable: false),
+                    PlaylistId = table.Column<int>(nullable: false),
+                    SongId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlaylistItem", x => x.PlaylistItemId);
+                    table.ForeignKey(
+                        name: "FK_PlaylistItem_Playlist_PlaylistId",
+                        column: x => x.PlaylistId,
+                        principalTable: "Playlist",
+                        principalColumn: "PlaylistId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlaylistItem_Songs_SongId",
+                        column: x => x.SongId,
+                        principalTable: "Songs",
+                        principalColumn: "SongId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -72,18 +120,39 @@ namespace Laaud_UWP.Migrations
                 column: "ArtistId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlaylistItem_PlaylistId",
+                table: "PlaylistItem",
+                column: "PlaylistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlaylistItem_SongId",
+                table: "PlaylistItem",
+                column: "SongId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Songs_AlbumId",
                 table: "Songs",
                 column: "AlbumId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Songs_PlaylistId",
+                table: "Songs",
+                column: "PlaylistId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "PlaylistItem");
+
+            migrationBuilder.DropTable(
                 name: "Songs");
 
             migrationBuilder.DropTable(
                 name: "Albums");
+
+            migrationBuilder.DropTable(
+                name: "Playlist");
 
             migrationBuilder.DropTable(
                 name: "Artists");

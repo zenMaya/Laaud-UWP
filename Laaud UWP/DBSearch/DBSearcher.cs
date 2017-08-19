@@ -138,36 +138,44 @@ namespace Laaud_UWP.DBSearch
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            TLoadedItem[] resultCollection = new TLoadedItem[countOfItemsToLoad];
-            Dictionary<int, int> itemIDsToLoad = new Dictionary<int, int>();
-            for (int index = this.lastLoadedItemIndex + 1; index <= this.lastLoadedItemIndex + countOfItemsToLoad; index++)
+            if (countOfItemsToLoad > 0)
             {
-                int itemID = this.sortedItemIds[index];
-                int itemIndexInNewCollection = index - this.lastLoadedItemIndex - 1;
-                if (this.loadedItemsCache.ContainsKey(itemID))
+
+                TLoadedItem[] resultCollection = new TLoadedItem[countOfItemsToLoad];
+                Dictionary<int, int> itemIDsToLoad = new Dictionary<int, int>();
+                for (int index = this.lastLoadedItemIndex + 1; index <= this.lastLoadedItemIndex + countOfItemsToLoad; index++)
                 {
-                    resultCollection[itemIndexInNewCollection] = this.loadedItemsCache[itemID];
-                }
-                else
-                {
-                    itemIDsToLoad.Add(itemID, itemIndexInNewCollection);
+                    int itemID = this.sortedItemIds[index];
+                    int itemIndexInNewCollection = index - this.lastLoadedItemIndex - 1;
+                    if (this.loadedItemsCache.ContainsKey(itemID))
+                    {
+                        resultCollection[itemIndexInNewCollection] = this.loadedItemsCache[itemID];
+                    }
+                    else
+                    {
+                        itemIDsToLoad.Add(itemID, itemIndexInNewCollection);
+                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
 
-                cancellationToken.ThrowIfCancellationRequested();
+                List<TLoadedItem> itemsNewlyLoaded = this.GetByPrimaryKeys(itemIDsToLoad.Keys.ToList());
+                foreach (TLoadedItem loadedItem in itemsNewlyLoaded)
+                {
+                    int primaryKey = this.GetPrimaryKey(loadedItem);
+                    this.loadedItemsCache.Add(primaryKey, loadedItem);
+                    resultCollection[itemIDsToLoad[primaryKey]] = loadedItem;
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+
+                this.lastLoadedItemIndex += countOfItemsToLoad;
+
+                return resultCollection.ToList();
             }
-
-            List<TLoadedItem> itemsNewlyLoaded = this.GetByPrimaryKeys(itemIDsToLoad.Keys.ToList());
-            foreach (TLoadedItem loadedItem in itemsNewlyLoaded)
+            else
             {
-                int primaryKey = this.GetPrimaryKey(loadedItem);
-                this.loadedItemsCache.Add(primaryKey, loadedItem);
-                resultCollection[itemIDsToLoad[primaryKey]] = loadedItem;
-                cancellationToken.ThrowIfCancellationRequested();
+                return new List<TLoadedItem>();
             }
-
-            this.lastLoadedItemIndex += countOfItemsToLoad;
-
-            return resultCollection.ToList();
         }
     }
 }

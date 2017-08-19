@@ -1,4 +1,5 @@
 ﻿using Com.PhilChuang.Utils.MvvmNotificationChainer;
+using Laaud_UWP.SearchResults.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,9 +7,11 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -26,46 +29,65 @@ namespace Laaud_UWP.SearchResults
     {
         private readonly NotificationChainManager notificationChainManager = new NotificationChainManager();
 
-        private string title;
-        private bool favorite;
         private bool expanderToggleState;
+        private bool loadingChildren;
         private SearchResultSelectedChangedEventArgs selectedItem;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<SearchResultSelectedChangedEventArgs> SelectedChanged;
         public event EventHandler<SearchResultEventArgs> DoubleClick;
-        public event EventHandler<SearchResultFavoriteChangedEventArgs> FavoriteChanged;
 
-        public int Id { get; }
+        private readonly ISearchResultModel model;
 
-        public int Level { get; }
+        public int Id
+        {
+            get
+            {
+                return this.model != null
+                    ? this.model.Id
+                    : 0;
+            }
+        }
 
         public string Title
         {
             get
             {
-                return this.title;
-            }
-
-            set
-            {
-                this.title = value;
-                this.RaisePropertyChanged(nameof(Title));
+                return this.model?.Title;
             }
         }
+
+        public int Level { get; }
 
         public bool Favorite
         {
             get
             {
-                return this.favorite;
+                return this.model != null
+                    ? this.model.Favorite
+                    : false;
             }
 
-            set
+            private set
             {
-                this.favorite = value;
-                this.RaisePropertyChanged(nameof(Favorite));
-                this.FavoriteChanged?.Invoke(this, new SearchResultFavoriteChangedEventArgs(this, this.Favorite));
+                if (this.model != null)
+                {
+                    this.model.Favorite = value;
+                    this.RaisePropertyChanged(nameof(Favorite));
+                }
+            }
+        }
+
+        public bool LoadingChildren
+        {
+            get
+            {
+                return this.loadingChildren;
+            }
+
+            private set
+            {
+                this.loadingChildren = value;
             }
         }
 
@@ -73,7 +95,7 @@ namespace Laaud_UWP.SearchResults
         {
             get
             {
-                return this.Level > 0;
+                return this.model != null;
             }
         }
 
@@ -84,10 +106,14 @@ namespace Laaud_UWP.SearchResults
                 return this.expanderToggleState;
             }
 
-            set
+            private set
             {
                 this.expanderToggleState = value;
                 this.RaisePropertyChanged(nameof(ExpanderToggleState));
+                if (this.expanderToggleState)
+                {
+                    LoadAndAddItemsAsync();
+                }
             }
         }
 
@@ -95,7 +121,9 @@ namespace Laaud_UWP.SearchResults
         {
             get
             {
-                return this.ChildrenListView.Items.Count > 0;
+                return this.model != null
+                    ? this.model.HasChildren
+                    : false;
             }
         }
 
@@ -108,7 +136,7 @@ namespace Laaud_UWP.SearchResults
                     .Configure(c => c.On(() => this.ExpanderToggleState))
                     .Finish();
 
-                return this.Level == 0 || (this.ChildrenListView.Items.Count > 0 && this.ExpanderToggleState);
+                return !this.ShowTitleBar || (this.model.HasChildren && this.ExpanderToggleState);
             }
         }
 
@@ -152,41 +180,55 @@ namespace Laaud_UWP.SearchResults
             }
         }
 
-        private SearchResult(int id, int level, string title, bool favorite)
+        private SearchResult(int level, ISearchResultModel model)
         {
             this.notificationChainManager.Observe(this);
             this.notificationChainManager.AddDefaultCall((sender, notifyingProperty, dependentProperty) => RaisePropertyChanged(dependentProperty));
 
-            this.Id = id;
+            this.model = model;
+
             this.Level = level;
 
             this.InitializeComponent();
 
             this.DataContext = this;
-
-            this.Title = title;
-            this.Favorite = favorite;
         }
 
         public SearchResult()
-            : this(0, 0, string.Empty, false)
+            : this(0, null)
         {
 
         }
 
-        public SearchResult AddChild(int id, string title, bool favorite)
+        public SearchResult AddChild(ISearchResultModel modelArgument)
         {
-            SearchResult searchResult = new SearchResult(id, this.Level + 1, title, favorite);
+            SearchResult searchResult = new SearchResult(this.Level + 1, modelArgument);
             searchResult.SelectedChanged += this.ProcessSelectionChanged;
             searchResult.DoubleClick += this.DoubleClick;
-            searchResult.FavoriteChanged += this.FavoriteChanged;
 
             this.ChildrenListView.Items.Add(searchResult);
 
-            this.RaisePropertyChanged(nameof(ShowExpanderButton));
-            this.RaisePropertyChanged(nameof(ShowExpanderList));
-
             return searchResult;
+        }
+
+        private async void LoadAndAddItemsAsync()
+        {
+            if (!this.LoadingChildren && this.model.HasChildren && this.ChildrenListView.Items.Count == 0)
+            {
+                this.LoadingChildren = true;
+                await Task.Factory.StartNew(async () =>
+                {
+                    IEnumerable<ISearchResultModel> models = this.model.CreateChildren();
+                    foreach (ISearchResultModel model in models)
+                    {
+                        await this.Dispatcher.RunIdleAsync(new IdleDispatchedHandler((args) =>
+                        {
+                            this.AddChild(model);
+                        }));
+                    }
+                });
+                this.LoadingChildren = false;
+            }
         }
 
         private void ProcessSelectionChanged(object sender, SearchResultSelectedChangedEventArgs e)

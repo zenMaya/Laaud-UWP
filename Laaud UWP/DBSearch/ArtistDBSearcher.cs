@@ -16,15 +16,8 @@ namespace Laaud_UWP.DBSearch
             using (MusicLibraryContext dbContext = new MusicLibraryContext())
             {
                 List<Artist> artists = dbContext.Artists
-                    .Include(artist => artist.Albums)
-                    .Include("Albums.Songs")
                     .Where(artist => primaryKeyCollection.Contains(artist.ArtistId))
                     .ToList();
-
-                foreach (Artist artist in artists)
-                {
-                    artist.Albums = artist.Albums.OrderBy(album => album.Name).ToList();
-                }
 
                 return artists;
             }

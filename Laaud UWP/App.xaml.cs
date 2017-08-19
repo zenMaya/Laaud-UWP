@@ -50,7 +50,7 @@ namespace Laaud_UWP
                 loggerFactory.AddProvider(new LaaudLoggerProvider());
 
                 // database creation and schema update
-                dbContext.Database.EnsureCreated();
+                dbContext.Database.Migrate();
             }
         }
 

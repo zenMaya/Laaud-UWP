@@ -16,11 +16,8 @@ namespace Laaud_UWP.DBSearch
             using (MusicLibraryContext dbContext = new MusicLibraryContext())
             {
                 List<Album> albums = dbContext.Albums
-                    .Include(album => album.Songs)
                     .Where(album => primaryKeyCollection.Contains(album.AlbumId))
                     .ToList();
-
-                albums.ForEach(album => album.Songs = album.Songs.OrderBy(song => song.Track).ToList());
 
                 return albums;
             }
@@ -32,8 +29,8 @@ namespace Laaud_UWP.DBSearch
             {
                 return dbContext.Albums
                     .Where(
-                        album => album.Name.ContainsIgnoreCase(searchTerm)
-                        || album.Artist.Name.ContainsIgnoreCase(searchTerm))
+                        item => item.Name.ContainsIgnoreCase(searchTerm)
+                        || item.Artist.Name.ContainsIgnoreCase(searchTerm))
                     .OrderBy(album => album.Name)
                     .Select(album => album.AlbumId)
                     .ToList();

@@ -8,8 +8,8 @@ using Laaud_UWP.Models;
 namespace Laaud_UWP.Migrations
 {
     [DbContext(typeof(MusicLibraryContext))]
-    [Migration("20170812131139_AddPlaylists")]
-    partial class AddPlaylists
+    [Migration("20170818225837_AddEverything")]
+    partial class AddEverything
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -85,6 +85,8 @@ namespace Laaud_UWP.Migrations
                     b.Property<int>("AlbumId");
 
                     b.Property<string>("Comment");
+
+                    b.Property<bool>("Favorite");
 
                     b.Property<string>("Genre");
 

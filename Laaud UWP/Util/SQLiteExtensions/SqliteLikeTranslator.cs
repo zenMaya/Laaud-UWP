@@ -24,11 +24,10 @@ namespace Laaud_UWP.Util.SQLiteExtensions
                 ? new LikeExpression(
                     methodCallExpression.Arguments[0],
                     Expression.Add(
-                        Expression.Add(
-                            Expression.Constant("%", typeof(string)), methodCallExpression.Arguments[1], _concat),
-                            Expression.Constant("%", typeof(string)),
-                        _concat))
-                    : null;
+                        methodCallExpression.Arguments[1],
+                        Expression.Constant("%", typeof(string)),
+                    _concat))
+                : null;
         }
     }
 }
