@@ -16,6 +16,7 @@ namespace Laaud_UWP.DBSearch
             using (MusicLibraryContext dbContext = new MusicLibraryContext())
             {
                 List<Album> albums = dbContext.Albums
+                    .Include(album => album.Artist)
                     .Where(album => primaryKeyCollection.Contains(album.AlbumId))
                     .ToList();
 
