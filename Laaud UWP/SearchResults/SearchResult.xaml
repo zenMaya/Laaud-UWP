@@ -7,31 +7,27 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignWidth="400" DoubleTapped="UserControl_DoubleTapped" Loaded="UserControl_LoadedAsync">
+    d:DesignWidth="400" Loaded="UserControl_LoadedAsync">
 
     <UserControl.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
     <StackPanel>
-        <Grid Height="60" Visibility="{Binding Path=ShowTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+        <Grid x:Name="TopBar" Height="60"  Visibility="{Binding Path=ShowTopBar, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal" Margin="0,0,50,0" DoubleTapped="TopBar_DoubleTapped" Tapped="TopBar_Tapped" Background="Transparent">
                 <Image x:Name="ImageImage" NineGrid="0,0,0,0" Margin="10,0,0,0" Width="45" Height="45" Visibility="{Binding Path=ShowImage, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <TextBlock x:Name="TitleTextBlock" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding Title}" VerticalAlignment="Center" FontSize="16" Foreground="White"/>
             </StackPanel>
-            
+
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button x:Name="FavoriteButton" Height="35" Margin="0,0,10,0" VerticalAlignment="Center" Width="35" Click="FavoriteButton_Click" Padding="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" >
                     <Image x:Name="FavoriteImage" Source="{Binding FavoriteImageSource}" Stretch="Uniform"/>
                 </Button>
-                <Button x:Name="ExpandButton" Height="35" Margin="0,0,10,0" VerticalAlignment="Center" Width="35" Padding="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Visibility="{Binding Path=ShowExpanderButton, Converter={StaticResource BooleanToVisibilityConverter}}" Click="ExpandButton_Click">
-                    <Image x:Name="ExpandImage" Source="{Binding ExpanderImageSource}" Stretch="Uniform"/>
-                </Button>
-                
             </StackPanel>
         </Grid>
 
-        <ListView x:Name="ChildrenListView" IsItemClickEnabled="True" ItemClick="ChildrenListView_ItemClick" Visibility="{Binding Path=ShowExpanderList, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalContentAlignment="Stretch">
+        <ListView x:Name="ChildrenListView" IsItemClickEnabled="True" ItemClick="ChildrenListView_ItemClick" Visibility="{Binding Path=ShowExpanderList, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalContentAlignment="Stretch" SelectionChanged="ChildrenListView_SelectionChanged">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />

@@ -92,7 +92,7 @@ namespace Laaud_UWP.SearchResults
             }
         }
 
-        public bool ShowTitleBar
+        public bool ShowTopBar
         {
             get
             {
@@ -137,7 +137,7 @@ namespace Laaud_UWP.SearchResults
                     .Configure(c => c.On(() => this.ExpanderToggleState))
                     .Finish();
 
-                return !this.ShowTitleBar || (this.model.HasChildren && this.ExpanderToggleState);
+                return !this.ShowTopBar || (this.model.HasChildren && this.ExpanderToggleState);
             }
         }
 
@@ -167,26 +167,6 @@ namespace Laaud_UWP.SearchResults
                 else
                 {
                     return ImageUtil.GetAssetsBitmapImageByFileName("Settings.png");
-                }
-            }
-        }
-
-        public BitmapImage ExpanderImageSource
-        {
-            get
-            {
-                this.notificationChainManager
-                    .CreateOrGet()
-                    .Configure(c => c.On(() => this.ExpanderToggleState))
-                    .Finish();
-
-                if (this.ExpanderToggleState)
-                {
-                    return ImageUtil.GetAssetsBitmapImageByFileName("Where.png");
-                }
-                else
-                {
-                    return ImageUtil.GetAssetsBitmapImageByFileName("Beavers.png");
                 }
             }
         }
@@ -224,7 +204,7 @@ namespace Laaud_UWP.SearchResults
 
         private async void LoadAndAddItemsAsync()
         {
-            if (!this.LoadingChildren && this.model.HasChildren && this.ChildrenListView.Items.Count == 0)
+            if (this.model != null && !this.LoadingChildren && this.model.HasChildren && this.ChildrenListView.Items.Count == 0)
             {
                 this.LoadingChildren = true;
                 await Task.Factory.StartNew(async () =>
@@ -273,11 +253,6 @@ namespace Laaud_UWP.SearchResults
             this.Favorite = !this.Favorite;
         }
 
-        private void ExpandButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.ExpanderToggleState = !this.ExpanderToggleState;
-        }
-
         private void ChildrenListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem != null)
@@ -296,11 +271,11 @@ namespace Laaud_UWP.SearchResults
                     listItem.IsSelected = true;
                 }
 
-                this.ProcessSelectionChanged(this, new SearchResultSelectedChangedEventArgs(this, this.ChildrenListView, listItem.IsSelected));
+                this.ProcessSelectionChanged(this, new SearchResultSelectedChangedEventArgs(this, list, listItem.IsSelected));
             }
         }
 
-        private void UserControl_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        private void TopBar_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             this.DoubleClick?.Invoke(this, new SearchResultEventArgs(this));
         }
@@ -316,6 +291,30 @@ namespace Laaud_UWP.SearchResults
             {
                 this.ImageImage.Source = await this.model.LoadImageAsync();
             }
+        }
+
+        private void TopBar_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            // this.ExpanderToggleState = !this.ExpanderToggleState;
+        }
+
+        private void ChildrenListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SearchResult clickedSearchResult;
+            clickedSearchResult = e.AddedItems.FirstOrDefault() as SearchResult;
+            if (clickedSearchResult != null)
+            {
+                clickedSearchResult.ExpanderToggleState = true;
+            }
+            else
+            {
+                clickedSearchResult = e.RemovedItems.FirstOrDefault() as SearchResult;
+                if (clickedSearchResult != null)
+                {
+                    clickedSearchResult.ExpanderToggleState = false;
+                }
+            }
+
         }
     }
 }
