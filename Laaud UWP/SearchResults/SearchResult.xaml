@@ -27,7 +27,7 @@
             </StackPanel>
         </Grid>
 
-        <ListView x:Name="ChildrenListView" IsItemClickEnabled="True" ItemClick="ChildrenListView_ItemClick" Visibility="{Binding Path=ShowExpanderList, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalContentAlignment="Stretch" SelectionChanged="ChildrenListView_SelectionChanged">
+        <ListView x:Name="ChildrenListView" Visibility="{Binding Path=ShowExpanderList, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalContentAlignment="Stretch">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />

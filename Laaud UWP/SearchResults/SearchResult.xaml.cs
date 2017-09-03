@@ -30,6 +30,7 @@ namespace Laaud_UWP.SearchResults
     {
         private readonly NotificationChainManager notificationChainManager = new NotificationChainManager();
 
+        private SearchResult parent;
         private bool expanderToggleState;
         private bool loadingChildren;
         private SearchResultSelectedChangedEventArgs selectedItem;
@@ -171,10 +172,12 @@ namespace Laaud_UWP.SearchResults
             }
         }
 
-        private SearchResult(int level, ISearchResultModel model)
+        private SearchResult(int level, ISearchResultModel model, SearchResult parent)
         {
             this.notificationChainManager.Observe(this);
             this.notificationChainManager.AddDefaultCall((sender, notifyingProperty, dependentProperty) => RaisePropertyChanged(dependentProperty));
+
+            this.parent = parent;
 
             this.model = model;
 
@@ -186,14 +189,13 @@ namespace Laaud_UWP.SearchResults
         }
 
         public SearchResult()
-            : this(0, null)
+            : this(0, null, null)
         {
-
         }
 
         public SearchResult AddChild(ISearchResultModel modelArgument)
         {
-            SearchResult searchResult = new SearchResult(this.Level + 1, modelArgument);
+            SearchResult searchResult = new SearchResult(this.Level + 1, modelArgument, this);
             searchResult.SelectedChanged += this.ProcessSelectionChanged;
             searchResult.DoubleClick += this.DoubleClick;
 
@@ -253,28 +255,6 @@ namespace Laaud_UWP.SearchResults
             this.Favorite = !this.Favorite;
         }
 
-        private void ChildrenListView_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            if (e.ClickedItem != null)
-            {
-                ListView list = sender as ListView;
-                ListViewItem listItem = list.ContainerFromItem(e.ClickedItem) as ListViewItem;
-
-                if (listItem.IsSelected)
-                {
-                    listItem.IsSelected = false;
-                    list.SelectionMode = ListViewSelectionMode.None;
-                }
-                else
-                {
-                    list.SelectionMode = ListViewSelectionMode.Single;
-                    listItem.IsSelected = true;
-                }
-
-                this.ProcessSelectionChanged(this, new SearchResultSelectedChangedEventArgs(this, list, listItem.IsSelected));
-            }
-        }
-
         private void TopBar_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             this.DoubleClick?.Invoke(this, new SearchResultEventArgs(this));
@@ -295,26 +275,26 @@ namespace Laaud_UWP.SearchResults
 
         private void TopBar_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            // this.ExpanderToggleState = !this.ExpanderToggleState;
-        }
+            if (this.parent != null)
+            {
+                ListView list = this.parent.ChildrenListView as ListView;
+                ListViewItem listItem = list.ContainerFromItem(this) as ListViewItem;
 
-        private void ChildrenListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            SearchResult clickedSearchResult;
-            clickedSearchResult = e.AddedItems.FirstOrDefault() as SearchResult;
-            if (clickedSearchResult != null)
-            {
-                clickedSearchResult.ExpanderToggleState = true;
-            }
-            else
-            {
-                clickedSearchResult = e.RemovedItems.FirstOrDefault() as SearchResult;
-                if (clickedSearchResult != null)
+                if (this.ExpanderToggleState)
                 {
-                    clickedSearchResult.ExpanderToggleState = false;
+                    listItem.IsSelected = false;
+                    list.SelectionMode = ListViewSelectionMode.None;
                 }
+                else
+                {
+                    list.SelectionMode = ListViewSelectionMode.Single;
+                    listItem.IsSelected = true;
+                }
+
+                this.ProcessSelectionChanged(this, new SearchResultSelectedChangedEventArgs(this, list, this.ExpanderToggleState));
             }
 
+            this.ExpanderToggleState = !this.ExpanderToggleState;
         }
     }
 }
