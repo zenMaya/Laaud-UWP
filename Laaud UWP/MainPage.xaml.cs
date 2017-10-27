@@ -312,14 +312,14 @@ namespace Laaud_UWP
 
         private async void SearchResults_ViewChangingAsync(object sender, ScrollViewerViewChangingEventArgs e)
         {
-            if (!this.addingStuff && this.SearchResults.ExtentHeight - e.NextView.VerticalOffset < 1000)
+            if (!this.addingStuff && this.SearchResults.ExtentHeight - e.NextView.VerticalOffset < 2000)
             {
                 await Task.Factory.StartNew(async () =>
                 {
                     switch (this.CurrentGroupType)
                     {
                         case SearchResultsGroupType.Song:
-                            List<Song> songs = await this.songDBSearcher.LoadItemsAsync(10);
+                            List<Song> songs = await this.songDBSearcher.LoadItemsAsync(50);
                             this.addingStuff = true;
                             foreach (Song song in songs)
                             {
@@ -329,7 +329,7 @@ namespace Laaud_UWP
                             this.addingStuff = false;
                             break;
                         case SearchResultsGroupType.Album:
-                            List<Album> albums = await this.albumDBSearcher.LoadItemsAsync(10);
+                            List<Album> albums = await this.albumDBSearcher.LoadItemsAsync(50);
                             this.addingStuff = true;
                             foreach (Album album in albums)
                             {
@@ -339,7 +339,7 @@ namespace Laaud_UWP
                             this.addingStuff = false;
                             break;
                         case SearchResultsGroupType.Artist:
-                            List<Artist> artists = await this.artistDBSearcher.LoadItemsAsync(10);
+                            List<Artist> artists = await this.artistDBSearcher.LoadItemsAsync(50);
                             this.addingStuff = true;
                             foreach (Artist artist in artists)
                             {
