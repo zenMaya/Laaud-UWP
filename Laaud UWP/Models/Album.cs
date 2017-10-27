@@ -18,5 +18,27 @@ namespace Laaud_UWP.Models
             get;
             set;
         }
+
+        public static Album CreateOrFind(MusicLibraryContext dbContext, string name, int artistId)
+        {
+            Album album = dbContext.Albums.FirstOrDefault(_album => _album.Name == name && _album.ArtistId == artistId);
+            if (album == null)
+            {
+                // if not found, create a new one
+                album = new Album()
+                {
+                    Name = name,
+                    ArtistId = artistId
+                };
+
+                dbContext.Albums.Add(album);
+            }
+            else
+            {
+                dbContext.Albums.Attach(album);
+            }
+
+            return album;
+        }
     }
 }

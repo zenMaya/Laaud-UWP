@@ -28,5 +28,26 @@ namespace Laaud_UWP.Models
         public int AlbumId { get; set; }
 
         public List<PlaylistItem> PlaylistItems { get; set; }
+
+        public static Song CreateOrFind(MusicLibraryContext dbContext, string path)
+        {
+            Song song = dbContext.Songs.FirstOrDefault(_song => _song.Path == path);
+            if (song == null)
+            {
+                // if not found, create a new one
+                song = new Song()
+                {
+                    Path = path
+                };
+
+                dbContext.Songs.Add(song);
+            }
+            else
+            {
+                dbContext.Songs.Attach(song);
+            }
+
+            return song;
+        }
     }
 }

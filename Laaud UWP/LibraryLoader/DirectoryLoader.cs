@@ -1,8 +1,10 @@
-﻿using Laaud_UWP.Models;
+﻿using Id3;
+using Laaud_UWP.Models;
 using Laaud_UWP.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,7 +32,7 @@ namespace Laaud_UWP.LibraryLoader
             this.RaiseProgressUpdate(0, null);
 
             int totalFileCount = await FileUtil.GetFilesCountInAllDirectoriesAsync(this.RootFolder);
-            int progressStep = totalFileCount / 100;
+            int progressStep = totalFileCount / 1000;
             int filesAlreadyProcessed = 0;
             int filesAlreadyProcessedTillLastProgressUpdate = progressStep + 1; // set so that we get status update as soon as we start updating the DB
 
@@ -54,81 +56,76 @@ namespace Laaud_UWP.LibraryLoader
                         // continue for sound files only
                         if (allowedExtensions.Contains(file.FileType.ToUpperInvariant()))
                         {
+                            Song song;
+
+                            Mp3Stream tagStream = new Id3.Mp3Stream(await file.OpenStreamForReadAsync());
+                            bool anySongTags;
+                            Id3Tag[] songTags = null;
                             try
                             {
-                                // try searching for an existing song in the DB by the path
-                                Tag songTag = await Task.Run(() => TagManager.ReadFile(file).Tag);
+                                songTags = tagStream.GetAllTags();
+                                anySongTags = songTags.Length > 0;
+                            }
+                            catch (Exception e)
+                            {
+                                anySongTags = false;
+                            }
+
+                            if (anySongTags)
+                            {
+                                Id3Tag songTag = songTags[0];
 
                                 // search for an existing artist by name
-                                Artist artist = dbContext.Artists.FirstOrDefault(_artist => _artist.Name == songTag.Artist);
-                                if (artist == null)
-                                {
-                                    // if not found, create a new one
-                                    artist = new Artist()
-                                    {
-                                        Name = songTag.Artist
-                                    };
+                                Artist artist = Artist.CreateOrFind(dbContext, songTag.Artists.Value);
 
-                                    dbContext.Artists.Add(artist);
-                                    dbContext.SaveChanges();
-                                }
+                                // search for an existing album by name and artist
+                                Album album = Album.CreateOrFind(dbContext, songTag.Album, artist.ArtistId);
 
-                                // search for an existing album by name
-                                Album album = dbContext.Albums.FirstOrDefault(_album => _album.Name == songTag.Album);
-                                if (album == null)
-                                {
-                                    // if not found, create a new one
-                                    album = new Album()
-                                    {
-                                        Name = songTag.Album,
-                                        Artist = artist
-                                    };
-
-                                    dbContext.Albums.Add(album);
-                                    dbContext.SaveChanges();
-                                }
-
-                                Song song = dbContext.Songs.FirstOrDefault(_song => _song.Path == file.Path);
-                                if (song == null)
-                                {
-                                    // if not found, create a new one
-                                    song = new Song()
-                                    {
-                                        Path = file.Path
-                                    };
-
-                                    dbContext.Songs.Add(song);
-                                }
+                                // search for an existing song by path
+                                song = Song.CreateOrFind(dbContext, file.Path);
 
                                 // set reference to the album
                                 song.Album = album;
 
                                 // load other simpler properties
-                                song.Year = (int)songTag.Year;
-                                song.Track = (int)songTag.Track;
+                                if (songTag.Year.IsAssigned)
+                                {
+                                    song.Year = songTag.Year.AsDateTime.Value.Year;
+                                }
+
+                                if (songTag.Track.IsAssigned)
+                                {
+                                    song.Track = songTag.Track.AsInt.Value;
+                                }
+
                                 song.Title = songTag.Title;
                                 song.Genre = songTag.Genre;
-                                song.Comment = songTag.Comment;
+                                song.Comment = string.Join(", ", songTag.Comments);
 
                                 // insert/update to DB
                                 dbContext.SaveChanges();
 
                                 // save image to localappdata
-                                if (songTag.Image != null)
+                                if (songTag.Pictures.Any())
                                 {
-                                    await SongImageUtil.SaveImageAsync(song.SongId, songTag.Image.Data, songTag.Image.MIMEType);
-                                }
-
-                                // update progress
-                                if (filesAlreadyProcessedTillLastProgressUpdate > progressStep)
-                                {
-                                    filesAlreadyProcessedTillLastProgressUpdate = 0;
-                                    this.RaiseProgressUpdate((float)filesAlreadyProcessed / totalFileCount, song);
+                                    await SongImageUtil.SaveImageAsync(song.SongId, songTag.Pictures.First().PictureData, songTag.Pictures.First().MimeType);
                                 }
                             }
-                            catch (Exception)
+                            else
                             {
+                                song = Song.CreateOrFind(dbContext, file.Path);
 
+                                song.Title = Path.GetFileNameWithoutExtension(file.Path);
+
+                                // insert/update to DB
+                                dbContext.SaveChanges();
+                            }
+
+                            // update progress
+                            if (filesAlreadyProcessedTillLastProgressUpdate > progressStep)
+                            {
+                                filesAlreadyProcessedTillLastProgressUpdate = 0;
+                                this.RaiseProgressUpdate((float)filesAlreadyProcessed / totalFileCount, song);
                             }
                         }
                     }
